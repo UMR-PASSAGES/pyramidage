@@ -534,7 +534,7 @@ class MyForm(QtGui.QMainWindow):
         # ajout de la légende sauf si pas besoin (pas de statut)
         if dic_statut_f.keys() != ['-- Tous --']:
             liste_patchs = [i[0] for i in p]
-            plt.legend(liste_patchs, statut_legende, 'best', frameon=False, prop={"size":15})
+            plt.legend(liste_patchs, statut_legende, loc='best', frameon=False, prop={"size":15})
         # pour ne pas avoir de décimales sur l'axe des X
         plt.xticks(range(1,max_lg),range(1,max_lg))
         # Définit les min et max pour l'axe des X et des Y (xmin, xmax, ymin, ymax)

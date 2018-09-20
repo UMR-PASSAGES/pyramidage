@@ -13,11 +13,10 @@
 ###################################################
 
 ###################################################
-# version du 15/03/2013
-# Pôle ARD
-# UMR 5185 ADES, CNRS
-# pole-ard@ades.cnrs.fr
-# www.ades.cnrs.fr
+# UMR 5319 Passages, CNRS
+# Pôle Analyse et Représentation des Données
+# contact julie.pierson@cnrs.fr
+# www.passages.cnrs.fr
 ###################################################
 
 import sys

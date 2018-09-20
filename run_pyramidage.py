@@ -26,6 +26,7 @@ from ui_pyramidage import Ui_pyramidAgeDialog
 import matplotlib
 matplotlib.use('Qt4Agg')
 import matplotlib.pyplot as plt
+import datetime
 
 
 # Initialise la variable globale du numéro de figure, pour pouvoir en créer plusieurs ensuite
@@ -34,6 +35,9 @@ num_fig = 0
 liste_statut = []
 # Initialise la variable globale de la liste des lignes  du fichier
 liste_ligne = []
+# recupere l'annee courante
+current_year = datetime.datetime.now().year
+
 
 # Crée le type de bouton spécial qui servira à sélectionner une couleur
 class ColorButton(QtGui.QPushButton):
@@ -102,6 +106,8 @@ class MyForm(QtGui.QMainWindow):
         QtCore.QObject.connect(self.ui.okButton, QtCore.SIGNAL("clicked()"), self.ok )
         # Quand on clique sur quitter, ça quitte...
         QtCore.QObject.connect(self.ui.quitButton, QtCore.SIGNAL("clicked()"), self.quitter )
+        # indique l'année en cours dans la liste déroulante correspondante
+        self.ui.anneeSpinBox.setValue(current_year)
 
     # Quand on clique sur annuler
     def quitter(self):
@@ -361,22 +367,11 @@ class MyForm(QtGui.QMainWindow):
         for row in range(self.ui.statutTableWidget.rowCount()):
             item = self.ui.statutTableWidget.cellWidget(row,1)
             liste_couleur.append(str(item.palette().color(1).name()))
-##        # liste des hachures à utiliser : '' pour pas de hachure, '/' pour hachuré
-##        liste_hachure = []
-##        for row in range(self.ui.statutTableWidget.rowCount()):
-##            item = self.ui.statutTableWidget.cellWidget(row,2)
-##            if item.isChecked():
-
-##               liste_hachure.append('/')
-##            else:
-##                liste_hachure.append('')
         # choix '-- Tous --' : on prend en compte tous les statuts
         if statut_possible == ['-- Tous --']:
             # les couleurs et les hachures sont les mêmes pour tous
             liste_couleur = liste_couleur * len(statut_possible)
-##            liste_hachure = liste_hachure * len(statut_possible)
         # couleur de la bordure des barres de l'histogramme
-        #couleur_bordure = str(self.ui.kcolorcombo.color().name())
         couleur_bordure = 'white'
         # année courante
         auj = self.ui.anneeSpinBox.value()
@@ -436,8 +431,6 @@ class MyForm(QtGui.QMainWindow):
             # création du 1er graph
             p.append(plt.barh(position,dic_lg[statut_possible[0]],width,align='center',\
                               edgecolor =couleur_bordure,color=liste_couleur[0]))
-##            p.append(plt.barh(position,dic_lg[statut_possible[0]],width,align='center',\
-##                              edgecolor =couleur_bordure,color=liste_couleur[0],hatch=liste_hachure[0]))
             # num du graph en cours
             k = 1
             # liste des longueurs des graphs précédents
@@ -448,8 +441,6 @@ class MyForm(QtGui.QMainWindow):
                 # création des graphs suivant, qui s'empilent chacun sur les graphs précédents
                 p.append(plt.barh(position,dic_lg[i],width,align='center',\
                                   edgecolor =couleur_bordure,color=liste_couleur[k],left=sum_left))
-##                p.append(plt.barh(position,dic_lg[i],width,align='center',\
-##                                  edgecolor =couleur_bordure,color=liste_couleur[k],hatch = liste_hachure[k],left=sum_left))
                 # mise à jour de la liste des graphs précédents
                 liste_left.append(dic_lg[i])
                 # mise à jour du num du graph en cours

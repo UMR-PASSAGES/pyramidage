@@ -8,6 +8,7 @@
 # WARNING! All changes made in this file will be lost!
 
 from PyQt4 import QtCore, QtGui
+import datetime
 
 try:
     _fromUtf8 = QtCore.QString.fromUtf8
@@ -61,7 +62,7 @@ class Ui_pyramidAgeDialog(object):
         self.anneeSpinBox.setSizePolicy(sizePolicy)
         self.anneeSpinBox.setMinimum(-9999)
         self.anneeSpinBox.setMaximum(9999)
-        self.anneeSpinBox.setProperty("value", 2012)
+        self.anneeSpinBox.setProperty("value", 2000)
         self.anneeSpinBox.setObjectName(_fromUtf8("anneeSpinBox"))
         self.gridLayout.addWidget(self.anneeSpinBox, 0, 1, 1, 1)
         self.anneeNaissLabel = QtGui.QLabel(self.layoutWidget)

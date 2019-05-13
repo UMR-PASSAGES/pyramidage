@@ -296,7 +296,7 @@ class MyForm(QtGui.QMainWindow):
     def addStatut(self):
         if self.ui.textFileLineEdit.text() == '':
             QtGui.QMessageBox.warning(self, 'Pas de fichier en entrée', "Veuillez choisir un fichier en entrée.")
-            raise IOError, "pas de fichier en entree"
+            raise IOError ("pas de fichier en entree")
         # repere l'endroit où doit être ajoutée la ligne
         row = self.ui.statutTableWidget.rowCount()
         # fait appel à la fonction addLineStatut pour insérer cette ligne
@@ -306,7 +306,7 @@ class MyForm(QtGui.QMainWindow):
     def removeStatut(self):
         if self.ui.textFileLineEdit.text() == '':
             QtGui.QMessageBox.warning(self, 'Pas de fichier en entrée', "Veuillez choisir un fichier en entrée.")
-            raise IOError, "pas de fichier en entree"
+            raise IOError ("pas de fichier en entree")
         # Fait une liste de tous les éléments sélectionnés
         itemSelec = self.ui.statutTableWidget.selectedIndexes()
         # Récupère seulement le numéro des lignes sélectionnées, soir le 1er tiers de itemSelec
@@ -334,11 +334,11 @@ class MyForm(QtGui.QMainWindow):
         # si aucun fichier texte choisi
         if self.ui.textFileLineEdit.text() == '':
             QtGui.QMessageBox.warning(self, 'Pas de fichier en entrée', 'Veuillez choisir un fichier en entrée.')
-            raise IOError, "pas de fichier en entree"
+            raise IOError ("pas de fichier en entree")
 
         if (self.ui.statutTableWidget.rowCount()) == 0:
             QtGui.QMessageBox.warning(self, "pas de statut", "Merci de sélectionner au moins un statut.")
-            raise IOError, "pas de statut"           
+            raise IOError ("pas de statut")
 
 
         #############################
@@ -357,7 +357,7 @@ class MyForm(QtGui.QMainWindow):
             item = self.ui.statutTableWidget.cellWidget(row,0)
             if str(item.currentText()) in statut_possible:
                 QtGui.QMessageBox.warning(self, "statut en double", "Vous avez choisi plus d'une fois le même statut!")
-                raise IOError, "statut en double"
+                raise IOError ("statut en double")
             statut_possible.append(str(item.currentText()))
         # Les mêmes, tels qu'ils apparaîtront dans la légende (pas implémenté)
         statut_legende = statut_possible

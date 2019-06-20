@@ -6,13 +6,14 @@
     <head>
     	<title>Pyramidage</title>
     	<meta charset="utf-8" />
-    	<link rel="stylesheet" href="css/styles.css"/>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
         <script src="js/jquery-3.4.1.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
         <script src="js/jquery-ui.min.js"></script>
         <script src="js/d3.min.js"></script>
         <script src="js/papaparse.min.js"></script>
         <script src="js/FileSaver.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     </head>
     <style>
         div.tooltip {
@@ -27,103 +28,235 @@
             border-radius: 8px;
             pointer-events: none;
             }
+        .table-scrollable{
+            max-height: 150px;
+            overflow: auto;
+            display:inline-block;
+        }
             
     </style>    
     
     <body class="bg-light">
-        <div class="containe">
-            <h2>Pyramidage</h2>
-            <p>blabla blabla blabla</p>
+        <div class="container-fluid">
             
-            <div class="row">
-                <div class="col" id="col1">
-                    <!-- input CSV file -->
+             <!-- presentation -->
+            <h2>Pyramidage</h2>
+                <div class="row">
+                    <div class="col-6">
+                        <h3>A quoi ça sert ?</h3>
+                        <p>Pyramidage est un outil en ligne pour créer des pyramides des âges automatiquement à partir d'un fichier CSV. Cet outil présente 3 intérêts :</p>
+                        <ul>
+                            <li>Faire varier facilement la taille des classes d'âge et les âges minimum et maximum</li>
+                            <li>Visualiser 2 variables en plus de l'âge et du sexe, une avec la couleur et l'autre avec une infobulle (en passant la souris sur la pyramide)</li>
+                            <li>Exporter le résultat en SVG pour pouvoir le modifier dans un logiciel de dessin vectoriel, en gardant comme identifiant l'information affichée dans l'infobulle</li>
+                        </ul>
+                    </div>
+                </div>
+                    
+                <div class="row">
                     <div class="col">
-                        <input type="file" class="form-control-file" id="inputFile" accept=".csv" name="Fichier CSV en entrée"/>
+                        <h3>Comment ça marche ?</h3>
+                            <div class="row">
+                                <div class="col-2">
+                                    <div class="list-group" id="list-tab" role="tablist">
+                                        <a class="list-group-item list-group-item-action active" id="list-input-list" data-toggle="list" href="#list-input" role="tab" aria-controls="input">Fichier en entrée</a>
+                                        <a class="list-group-item list-group-item-action" id="list-year-list" data-toggle="list" href="#list-year" role="tab" aria-controls="year">Année</a>
+                                        <a class="list-group-item list-group-item-action" id="list-birthyear-list" data-toggle="list" href="#list-birthyear" role="tab" aria-controls="birthyear">Année de naissance</a>
+                                        <a class="list-group-item list-group-item-action" id="list-sex-list" data-toggle="list" href="#list-sex" role="tab" aria-controls="sex">Sexe</a>
+                                        <a class="list-group-item list-group-item-action" id="list-status-list" data-toggle="list" href="#list-status" role="tab" aria-controls="status">Catégorie</a>
+                                        <a class="list-group-item list-group-item-action" id="list-tooltip-list" data-toggle="list" href="#list-tooltip" role="tab" aria-controls="tooltip">Infobulle</a>
+                                        <a class="list-group-item list-group-item-action" id="list-classsize-list" data-toggle="list" href="#list-classsize" role="tab" aria-controls="classsize">Taille classe d'âge</a>
+                                        <a class="list-group-item list-group-item-action" id="list-beginfirstclass-list" data-toggle="list" href="#list-beginfirstclass" role="tab" aria-controls="beginfirstclass">Première classe d'âge</a>
+                                        <a class="list-group-item list-group-item-action" id="list-beginlastclass-list" data-toggle="list" href="#list-beginlastclass" role="tab" aria-controls="beginlastclass">Dernière classe d'âge</a>
+                                        <a class="list-group-item list-group-item-action" id="list-statustable-list" data-toggle="list" href="#list-statustable" role="tab" aria-controls="statustable">Tableau des statuts</a>
+                                        <a class="list-group-item list-group-item-action" id="list-buildpyramid-list" data-toggle="list" href="#list-buildpyramid" role="tab" aria-controls="buildpyramid">Construire une pyramide</a>
+                                        <a class="list-group-item list-group-item-action" id="list-svgexport-list" data-toggle="list" href="#list-svgexport" role="tab" aria-controls="svgexport">Export SVG</a>
+                                    </div>
+                                    </div>
+                                        <div class="col-4">
+                                        <div class="tab-content" id="nav-tabContent">
+                                            <div class="tab-pane fade show active" id="list-input" role="tabpanel" aria-labelledby="list-input-list">
+                                                <p>Le fichier CSV doit contenir :</p>
+                                                <ul>
+                                                    <li>une ligne d'en-tête</li>
+                                                    <li>une ligne par individu</li>
+                                                    <li>une colonne pour l'année de naissance</li>
+                                                    <li>une colonne pour le sexe</li>
+                                                </ul>
+                                                <p>Les colonnes Catégorie et Infobulle sont facultatives.</p>
+                                                <p>Le caractère délimiteur (virgule, point-virgule...) est normalement automatiquement détecté.</p>
+                                                <p>Un fichier exemple avec des données aléatoires est disponible <a href="https://github.com/UMR-PASSAGES/pyramidage/blob/master/test_data/test_data_pyramidage.csv">ici</a>.</p>
+                                            </div>
+                                            <div class="tab-pane fade" id="list-year" role="tabpanel" aria-labelledby="list-year-list"><p>Choisissez l'année pour laquelle la pyramide sera valable. Il s'agit généralement de l'année en cours.</p></div>
+                                            <div class="tab-pane fade" id="list-birthyear" role="tabpanel" aria-labelledby="list-birthyear-list"><p>Sélectionnez la colonne du fichier CSV correspondant à l'année de naissance.</p></div>
+                                            <div class="tab-pane fade" id="list-sex" role="tabpanel" aria-labelledby="list-sex-list">
+                                                <p>Sélectionnez la colonne du fichier CSV correspondant au sexe.</p>
+                                                <p>Le sexe féminin peut être codé par F, FEMME, FEMALE, XX.</p>
+                                                <p>Le sexe masculin peut être codé par M, H, HOMME, MALE, XY.</p>
+                                            </div>
+                                            <div class="tab-pane fade" id="list-status" role="tabpanel" aria-labelledby="list-status-list">
+                                                <p>Cette option est facultative.</p>
+                                                <p>Vous pouvez choisir une colonne avec des catégories ; chaque individu sera représenté d'une couleur correspondant à sa catégorie.</p>
+                                                <p>Les couleurs sont personnalisable, ainsi que l'ordre dans lequel les catégories sont dessinées en partant de l'axe vertical de la pyramide.</p>
+                                                <p>Si vous ne choisissez aucune colonne, tous les individus seront représentés de la même couleur.</p>
+                                            </div>
+                                            <div class="tab-pane fade" id="list-tooltip" role="tabpanel" aria-labelledby="list-tooltip-list">
+                                                <p>Cette option est facultative.</p>
+                                                <p>Vous pouvez choisir une colonne correspondant à l'information de votre choix. Cette information sera disponible pour chaque individu dans une infobulle en le survolant avec la souris.</p>
+                                                <p>Cette information sera également récupérée dans l'export SVG via l'identifiant de chaque carré correspondant à un individu.</p>
+                                            </div>
+                                            <div class="tab-pane fade" id="list-classsize" role="tabpanel" aria-labelledby="list-classsize-list"><p>Choisissez ici la taille de chaque classe d'âge en nombre d'années.</p></div>
+                                            <div class="tab-pane fade" id="list-beginfirstclass" role="tabpanel" aria-labelledby="list-beginfirstclass-list">
+                                                <p>Choisissez ici le début de la première classe d'âge en année. Une classe inférieure sera créée</p>
+                                                <p>Par exemple, si vous choisissez 25, une classe sera créée pour les moins de 25 ans.</p>
+                                            </div>
+                                            <div class="tab-pane fade" id="list-beginlastclass" role="tabpanel" aria-labelledby="list-beginlastclass-list">
+                                                <p>Choisissez ici le début de la dernière classe d'âge en année. Une classe supérieure sera créée</p>
+                                                <p>Par exemple, si vous choisissez 65 et une taille de classe d'âge de 5, une classe sera créée pour les plus de 70 ans.</p>
+                                            </div>
+                                            <div class="tab-pane fade" id="list-buildpyramid" role="tabpanel" aria-labelledby="list-buildpyramid-list">Cliquez sur ce bouton pour afficher la pyramide des âges dans la partie droite. Le graphique ne se met pas à jour automatiquement, il faut donc reconstruire la pyramide après avoir modifié un paramètre.</div>
+                                            <div class="tab-pane fade" id="list-svgexport" role="tabpanel" aria-labelledby="list-svgexport-list">Cliquez sur ce bouton pour obtenir un export SVG de la pyramide.</div>
+                                        </div>
+                                </div>
+                            </div>
+                    </div>
+                </div>
+                    
+                <div class="row">
+                    <div class="col-6">
+                        <h3>Mais encore ?</h3>
+
+                        <p>Pyramidage utilise la bibliothèque javascript <a href="https://d3js.org/">D3.js</a>. Le code complet est disponible <a href="https://github.com/UMR-PASSAGES/pyramidage/">ici</a> et est sous licence <a href="https://www.gnu.org/licenses/quick-guide-gplv3.fr.html">GPLv3</a>.</p>
+                        <p>Si vous voulez citer Pyramidage (ça n'est pas obligé !) : Julie Pierson, Pyramidage, Pôle ARD UMR 5319 Passages, 2019.</p>
+                    </div>
+                </div>
+            <hr>
+            
+            <!-- important part -->
+            <form>
+            <div class="row">
+            
+                <div class="col-4" id="col1">
+
+                    <!-- input CSV file -->
+                    <div class="row">
+                        <div class="col-4">
+                            <label for="inputFile" class="btn btn-secondary btn-block btn-outlined">Fichier CSV</label>
+                            <input type="file" id="inputFile" accept=".csv" name="Fichier CSV"/ style="display: none">
+                        </div>
+                        <div class="col-8">
+                            <p id="fileName"></p>
+                        </div>
                     </div>
                     
                     <!-- div for CSV preview -->
-                    <div class="col" id="divPreview">
-                    </div>
-                    
-                    <!-- current year -->
-                    <div class="col">
-                        <label for="currentYear">Année :</label>
-                        <input class="form-control" type="number" id="currentYear" min="1000" max="2099" step="1" value="2019" />
-                    </div>
-                    
-                    <!-- choose columns -->
                     <div class="row">
                         <div class="col">
+                            <div id="divPreview" class="table-responsive table-scrollable"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- input parameters -->
+                    <div class="row">
+                        <!-- current year -->
+                        <div class="col-8">
+                            <label for="currentYear">Année :</label>
+                        </div>
+                        <div class="col-4">
+                            <input class="form-control" type="number" id="currentYear" min="1000" max="2099" step="1" value="2019" />
+                        </div>
+                        <div class="w-100"></div>
+                        <!-- column for birth year -->
+                        <div class="col-8">
                             <label for="colYear">Année de naissance :</label>
+                        </div>
+                        <div class="col-4">
                             <select class="custom-select d-block w-100" id="colYear"></select>
                         </div>
-                        <div class="col">
+                        <div class="w-100"></div>
+                        <!-- column for sex -->
+                        <div class="col-8">
                             <label for="colSex">Sexe :</label>
+                        </div>
+                        <div class="col-4">
                             <select class="custom-select d-block w-100" id="colSex"></select>
                         </div>
-                    </div>
-                    <div class="row">
-                        <div class="col">
-                            <label for="colStatus">Statut :</label>
+                        <div class="w-100"></div>
+                        <!-- column for status -->
+                        <div class="col-8">
+                            <label for="colStatus">Catégorie :</label>
+                        </div>
+                        <div class="col-4">
                             <select class="custom-select d-block w-100" id="colStatus"></select>
                         </div>
-                        <div class="col">
+                        <div class="w-100"></div>
+                        <!-- column for tooltip -->
+                        <div class="col-8">
                             <label for="colTooltip">Infobulle :</label>
+                        </div>
+                        <div class="col-4">
                             <select class="custom-select d-block w-100" id="colTooltip"></select>
                         </div>
-                    </div>
-                    
-                    <!-- class size -->
-                    <div class="col">
-                        <label for="classSize">Taille des classes d'âge (en année) :</label>
-                        <input class="form-control" type="number" id="classSize" min="1" max="1000" step="1" value="5" />
-                    </div>
-                    
-                    <!-- beginning of first age class -->
-                    <div class="col">
-                        <label for="beginFirstClass">Début de la 1ère classe d'âge (en années) :</label>
-                        <input class="form-control" type="number" id="beginFirstClass" min="0" max="1000" step="1" value="25" />
-                    </div>
-                    
-                    <!-- beginning of last age class -->
-                    <div class="col">
-                        <label for="beginLastClass">Début de la dernière classe d'âge (en années) :</label>
-                        <select class="custom-select d-block w-20" id="beginLastClass"></select>
+                        <div class="w-100"></div>
+                        <!-- column for class size -->
+                        <div class="col-8">
+                            <label for="classSize">Taille des classes d'âge (en année) :</label>
+                        </div>
+                        <div class="col-4">
+                            <input class="form-control" type="number" id="classSize" min="1" max="1000" step="1" value="5" />
+                        </div>
+                        <div class="w-100"></div>
+                        <!-- beginning of first age class -->
+                        <div class="col-8">
+                            <label for="beginFirstClass">Début de la 1ère classe d'âge (en années) :</label>
+                        </div>
+                        <div class="col-4">
+                            <input class="form-control" type="number" id="beginFirstClass" min="0" max="1000" step="1" value="25" />
+                        </div>
+                        <div class="w-100"></div>
+                        <!-- beginning of last age class -->
+                        <div class="col-8">
+                            <label for="beginLastClass">Début de la dernière classe d'âge (en années) :</label>
+                        </div>   
+                        <div class="col-4">
+                            <select class="custom-select d-block w-20" id="beginLastClass"></select>
+                        </div>    
                     </div>
                     
                     <!-- status table -->
                     <div class="col">
-                        <table class="table" id="statusTable">
-                            <thead>
-                                <tr>
-                                    <th scope="col">Statut</th>
-                                    <th scope="col">Couleur</th>
-                                </tr>
-                            </thead>
-                            <tbody id="statusTableTbody">
-                            </tbody>
-                        </table>
+                        <div class="table-responsive table-scrollable">
+                            <table class="table table-sm table-hover" id="statusTable">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th scope="col">Catégorie</th>
+                                        <th scope="col">Couleur</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="statusTableTbody">
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                     
+                    <!-- buttons -->
                     <div class="row">
                         <!-- create graph -->
-                        <div class="col">
-                            <button type="button" class="btn btn-primary" id="createGraph">Construire une pyramide !</button> 
+                        <div class="col-6">
+                            <button type="button" class="btn btn-primary btn-block" id="createGraph">Construire une pyramide !</button>
                         </div>
-                         
                         <!-- output SVG file -->
-                        <div class="col">
+                        <div class="col-6">
                             <form onsubmit="download(this['name'].value)">
-                            <input type="submit" value="Export SVG">
+                            <input class="btn btn-secondary btn-block" type="submit" value="Export SVG">
                         </div>
                     </div>
                     
                 </div>
                 
-                <div class="col" id="col2">
+                <div class="col-8" id="col2">
                 </div>
-        
+            </form>
             </div> <!-- end of row div -->
         </div> <!-- end of container div -->
         
@@ -336,10 +469,10 @@
                 var container = d3.select("#divPreview")
                     .append("table")
                         .attr("id", "preview")
-                        .attr("class", "table")
+                        .attr("class", "table table-sm")
 
                     .selectAll("tr")
-                        .data(inputArray.slice(0,6)).enter()
+                        .data(inputArray).enter()
                         .append("tr")
 
                     .selectAll("td")
@@ -646,6 +779,13 @@
             /*
             SCRIPT
             */
+            
+            // display CSV file name
+            $("#inputFile").change(function() {
+                filename = this.files[0].name;
+                document.getElementById("fileName").innerHTML = filename;
+                console.log(filename);
+            });
             
             // no CSV file is selected when page is (re)loaded
             document.getElementById('inputFile').value = '';

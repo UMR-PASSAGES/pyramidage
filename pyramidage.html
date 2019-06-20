@@ -41,102 +41,17 @@
             
              <!-- presentation -->
             <h2>Pyramidage</h2>
-                <div class="row">
-                    <div class="col-6">
-                        <h3>A quoi ça sert ?</h3>
-                        <p>Pyramidage est un outil en ligne pour créer des pyramides des âges automatiquement à partir d'un fichier CSV. Cet outil présente 3 intérêts :</p>
-                        <ul>
-                            <li>Faire varier facilement la taille des classes d'âge et les âges minimum et maximum</li>
-                            <li>Visualiser 2 variables en plus de l'âge et du sexe, une avec la couleur et l'autre avec une infobulle (en passant la souris sur la pyramide)</li>
-                            <li>Exporter le résultat en SVG pour pouvoir le modifier dans un logiciel de dessin vectoriel, en gardant comme identifiant l'information affichée dans l'infobulle</li>
-                        </ul>
-                    </div>
-                </div>
-                    
-                <div class="row">
-                    <div class="col">
-                        <h3>Comment ça marche ?</h3>
-                            <div class="row">
-                                <div class="col-2">
-                                    <div class="list-group" id="list-tab" role="tablist">
-                                        <a class="list-group-item list-group-item-action active" id="list-input-list" data-toggle="list" href="#list-input" role="tab" aria-controls="input">Fichier en entrée</a>
-                                        <a class="list-group-item list-group-item-action" id="list-year-list" data-toggle="list" href="#list-year" role="tab" aria-controls="year">Année</a>
-                                        <a class="list-group-item list-group-item-action" id="list-birthyear-list" data-toggle="list" href="#list-birthyear" role="tab" aria-controls="birthyear">Année de naissance</a>
-                                        <a class="list-group-item list-group-item-action" id="list-sex-list" data-toggle="list" href="#list-sex" role="tab" aria-controls="sex">Sexe</a>
-                                        <a class="list-group-item list-group-item-action" id="list-status-list" data-toggle="list" href="#list-status" role="tab" aria-controls="status">Catégorie</a>
-                                        <a class="list-group-item list-group-item-action" id="list-tooltip-list" data-toggle="list" href="#list-tooltip" role="tab" aria-controls="tooltip">Infobulle</a>
-                                        <a class="list-group-item list-group-item-action" id="list-classsize-list" data-toggle="list" href="#list-classsize" role="tab" aria-controls="classsize">Taille classe d'âge</a>
-                                        <a class="list-group-item list-group-item-action" id="list-beginfirstclass-list" data-toggle="list" href="#list-beginfirstclass" role="tab" aria-controls="beginfirstclass">Première classe d'âge</a>
-                                        <a class="list-group-item list-group-item-action" id="list-beginlastclass-list" data-toggle="list" href="#list-beginlastclass" role="tab" aria-controls="beginlastclass">Dernière classe d'âge</a>
-                                        <a class="list-group-item list-group-item-action" id="list-statustable-list" data-toggle="list" href="#list-statustable" role="tab" aria-controls="statustable">Tableau des statuts</a>
-                                        <a class="list-group-item list-group-item-action" id="list-buildpyramid-list" data-toggle="list" href="#list-buildpyramid" role="tab" aria-controls="buildpyramid">Construire une pyramide</a>
-                                        <a class="list-group-item list-group-item-action" id="list-svgexport-list" data-toggle="list" href="#list-svgexport" role="tab" aria-controls="svgexport">Export SVG</a>
-                                    </div>
-                                    </div>
-                                        <div class="col-4">
-                                        <div class="tab-content" id="nav-tabContent">
-                                            <div class="tab-pane fade show active" id="list-input" role="tabpanel" aria-labelledby="list-input-list">
-                                                <p>Le fichier CSV doit contenir :</p>
-                                                <ul>
-                                                    <li>une ligne d'en-tête</li>
-                                                    <li>une ligne par individu</li>
-                                                    <li>une colonne pour l'année de naissance</li>
-                                                    <li>une colonne pour le sexe</li>
-                                                </ul>
-                                                <p>Les colonnes Catégorie et Infobulle sont facultatives.</p>
-                                                <p>Le caractère délimiteur (virgule, point-virgule...) est normalement automatiquement détecté.</p>
-                                                <p>Un fichier exemple avec des données aléatoires est disponible <a href="https://github.com/UMR-PASSAGES/pyramidage/blob/master/test_data/test_data_pyramidage.csv">ici</a>.</p>
-                                            </div>
-                                            <div class="tab-pane fade" id="list-year" role="tabpanel" aria-labelledby="list-year-list"><p>Choisissez l'année pour laquelle la pyramide sera valable. Il s'agit généralement de l'année en cours.</p></div>
-                                            <div class="tab-pane fade" id="list-birthyear" role="tabpanel" aria-labelledby="list-birthyear-list"><p>Sélectionnez la colonne du fichier CSV correspondant à l'année de naissance.</p></div>
-                                            <div class="tab-pane fade" id="list-sex" role="tabpanel" aria-labelledby="list-sex-list">
-                                                <p>Sélectionnez la colonne du fichier CSV correspondant au sexe.</p>
-                                                <p>Le sexe féminin peut être codé par F, FEMME, FEMALE, XX.</p>
-                                                <p>Le sexe masculin peut être codé par M, H, HOMME, MALE, XY.</p>
-                                            </div>
-                                            <div class="tab-pane fade" id="list-status" role="tabpanel" aria-labelledby="list-status-list">
-                                                <p>Cette option est facultative.</p>
-                                                <p>Vous pouvez choisir une colonne avec des catégories ; chaque individu sera représenté d'une couleur correspondant à sa catégorie.</p>
-                                                <p>Les couleurs sont personnalisable, ainsi que l'ordre dans lequel les catégories sont dessinées en partant de l'axe vertical de la pyramide.</p>
-                                                <p>Si vous ne choisissez aucune colonne, tous les individus seront représentés de la même couleur.</p>
-                                            </div>
-                                            <div class="tab-pane fade" id="list-tooltip" role="tabpanel" aria-labelledby="list-tooltip-list">
-                                                <p>Cette option est facultative.</p>
-                                                <p>Vous pouvez choisir une colonne correspondant à l'information de votre choix. Cette information sera disponible pour chaque individu dans une infobulle en le survolant avec la souris.</p>
-                                                <p>Cette information sera également récupérée dans l'export SVG via l'identifiant de chaque carré correspondant à un individu.</p>
-                                            </div>
-                                            <div class="tab-pane fade" id="list-classsize" role="tabpanel" aria-labelledby="list-classsize-list"><p>Choisissez ici la taille de chaque classe d'âge en nombre d'années.</p></div>
-                                            <div class="tab-pane fade" id="list-beginfirstclass" role="tabpanel" aria-labelledby="list-beginfirstclass-list">
-                                                <p>Choisissez ici le début de la première classe d'âge en année. Une classe inférieure sera créée</p>
-                                                <p>Par exemple, si vous choisissez 25, une classe sera créée pour les moins de 25 ans.</p>
-                                            </div>
-                                            <div class="tab-pane fade" id="list-beginlastclass" role="tabpanel" aria-labelledby="list-beginlastclass-list">
-                                                <p>Choisissez ici le début de la dernière classe d'âge en année. Une classe supérieure sera créée</p>
-                                                <p>Par exemple, si vous choisissez 65 et une taille de classe d'âge de 5, une classe sera créée pour les plus de 70 ans.</p>
-                                            </div>
-                                            <div class="tab-pane fade" id="list-buildpyramid" role="tabpanel" aria-labelledby="list-buildpyramid-list">Cliquez sur ce bouton pour afficher la pyramide des âges dans la partie droite. Le graphique ne se met pas à jour automatiquement, il faut donc reconstruire la pyramide après avoir modifié un paramètre.</div>
-                                            <div class="tab-pane fade" id="list-svgexport" role="tabpanel" aria-labelledby="list-svgexport-list">Cliquez sur ce bouton pour obtenir un export SVG de la pyramide.</div>
-                                        </div>
-                                </div>
-                            </div>
-                    </div>
-                </div>
-                    
-                <div class="row">
-                    <div class="col-6">
-                        <h3>Mais encore ?</h3>
-
-                        <p>Pyramidage utilise la bibliothèque javascript <a href="https://d3js.org/">D3.js</a>. Le code complet est disponible <a href="https://github.com/UMR-PASSAGES/pyramidage/">ici</a> et est sous licence <a href="https://www.gnu.org/licenses/quick-guide-gplv3.fr.html">GPLv3</a>.</p>
-                        <p>Si vous voulez citer Pyramidage (ça n'est pas obligé !) : Julie Pierson, Pyramidage, Pôle ARD UMR 5319 Passages, 2019.</p>
-                    </div>
-                </div>
+            <p class="text-justify">Pyramidage est un outil en ligne pour créer des pyramides des âges automatiquement à partir d'un fichier CSV.</p>
+            <ul>
+                <li><a href="#pourquoi">A quoi ça sert ?</a></li>
+                <li><a href="#comment">Comment ça marche ?</a></li>
+                <li><a href="#maisencore">Mais encore ?</a></li>
+            </ul>
             <hr>
             
             <!-- important part -->
-            <form>
             <div class="row">
-            
-                <div class="col-4" id="col1">
+                <div class="col-sm-4" id="col1">
 
                     <!-- input CSV file -->
                     <div class="row">
@@ -159,85 +74,86 @@
                     <!-- input parameters -->
                     <div class="row">
                         <!-- current year -->
-                        <div class="col-8">
+                        <div class="col-sm-8">
                             <label for="currentYear">Année :</label>
                         </div>
-                        <div class="col-4">
+                        <div class="col-sm-4">
                             <input class="form-control" type="number" id="currentYear" min="1000" max="2099" step="1" value="2019" />
                         </div>
                         <div class="w-100"></div>
                         <!-- column for birth year -->
-                        <div class="col-8">
+                        <div class="col-sm-8">
                             <label for="colYear">Année de naissance :</label>
                         </div>
-                        <div class="col-4">
+                        <div class="col-sm-4">
                             <select class="custom-select d-block w-100" id="colYear"></select>
                         </div>
                         <div class="w-100"></div>
                         <!-- column for sex -->
-                        <div class="col-8">
+                        <div class="col-sm-8">
                             <label for="colSex">Sexe :</label>
                         </div>
-                        <div class="col-4">
+                        <div class="col-sm-4">
                             <select class="custom-select d-block w-100" id="colSex"></select>
                         </div>
                         <div class="w-100"></div>
-                        <!-- column for status -->
-                        <div class="col-8">
-                            <label for="colStatus">Catégorie :</label>
+                        <!-- column for category -->
+                        <div class="col-sm-8">
+                            <label for="colCat">Catégorie :</label>
                         </div>
-                        <div class="col-4">
-                            <select class="custom-select d-block w-100" id="colStatus"></select>
+                        <div class="col-sm-4">
+                            <select class="custom-select d-block w-100" id="colCat"></select>
                         </div>
                         <div class="w-100"></div>
                         <!-- column for tooltip -->
-                        <div class="col-8">
+                        <div class="col-sm-8">
                             <label for="colTooltip">Infobulle :</label>
                         </div>
-                        <div class="col-4">
+                        <div class="col-sm-4">
                             <select class="custom-select d-block w-100" id="colTooltip"></select>
                         </div>
                         <div class="w-100"></div>
                         <!-- column for class size -->
-                        <div class="col-8">
-                            <label for="classSize">Taille des classes d'âge (en année) :</label>
+                        <div class="col-sm-8">
+                            <label for="classSize">Taille des classes d'âge :</label>
                         </div>
-                        <div class="col-4">
+                        <div class="col-sm-4">
                             <input class="form-control" type="number" id="classSize" min="1" max="1000" step="1" value="5" />
                         </div>
                         <div class="w-100"></div>
                         <!-- beginning of first age class -->
-                        <div class="col-8">
-                            <label for="beginFirstClass">Début de la 1ère classe d'âge (en années) :</label>
+                        <div class="col-sm-8">
+                            <label for="beginFirstClass">Début de la première classe d'âge :</label>
                         </div>
-                        <div class="col-4">
+                        <div class="col-sm-4">
                             <input class="form-control" type="number" id="beginFirstClass" min="0" max="1000" step="1" value="25" />
                         </div>
                         <div class="w-100"></div>
-                        <!-- beginning of last age class -->
-                        <div class="col-8">
-                            <label for="beginLastClass">Début de la dernière classe d'âge (en années) :</label>
+                        <!-- end of last age class -->
+                        <div class="col-sm-8">
+                            <label for="endLastClass">Fin de la dernière classe d'âge :</label>
                         </div>   
-                        <div class="col-4">
-                            <select class="custom-select d-block w-20" id="beginLastClass"></select>
+                        <div class="col-sm-4">
+                            <select class="custom-select d-block w-20" id="endLastClass"></select>
                         </div>    
                     </div>
-                    
-                    <!-- status table -->
+                    <br>
+                    <!-- category table -->
                     <div class="col">
                         <div class="table-responsive table-scrollable">
-                            <table class="table table-sm table-hover" id="statusTable">
+                            <table class="table table-sm table-hover" id="catTable">
                                 <thead class="thead-light">
                                     <tr>
                                         <th scope="col">Catégorie</th>
                                         <th scope="col">Couleur</th>
                                     </tr>
                                 </thead>
-                                <tbody id="statusTableTbody">
+                                <tbody id="catTableTbody">
                                 </tbody>
                             </table>
                         </div>
                     </div>
+                    <br>
                     
                     <!-- buttons -->
                     <div class="row">
@@ -254,10 +170,118 @@
                     
                 </div>
                 
-                <div class="col-8" id="col2">
+                <div class="col-sm-8" id="col2">
                 </div>
-            </form>
-            </div> <!-- end of row div -->
+            </div>
+                
+            <hr>
+            
+            <div class="row">
+                <div class="col">
+                    <h3><a id="pourquoi">A quoi ça sert ?</a></h3>
+                    <p class="text-justify">Pyramidage est un outil en ligne pour créer des pyramides des âges automatiquement à partir d'un fichier CSV. Cet outil présente 3 intérêts :
+                        <ul>
+                            <li>Faire varier facilement la taille des classes d'âge et les âges minimum et maximum</li>
+                            <li>Visualiser 2 variables en plus de l'âge et du sexe, une avec la couleur et l'autre avec une infobulle (en passant la souris sur la pyramide)</li>
+                            <li>Exporter le résultat en SVG pour pouvoir le modifier dans un logiciel de dessin vectoriel, en gardant comme identifiant l'information affichée dans l'infobulle.</li>
+                        </ul>
+                    </p>
+                </div>
+            </div>
+                
+            <hr>
+                    
+            <div class="row">
+                <div class="col">
+                    <h3><a id="comment">Comment ça marche ?</a></h3>
+                        <div class="row">
+                            <div class="col-sm-2">
+                                <div class="list-group" id="list-tab" role="tablist">
+                                    <a class="list-group-item list-group-item-action active" id="list-input-list" data-toggle="list" href="#list-input" role="tab" aria-controls="input">Fichier en entrée</a>
+                                    <a class="list-group-item list-group-item-action" id="list-year-list" data-toggle="list" href="#list-year" role="tab" aria-controls="year">Année</a>
+                                    <a class="list-group-item list-group-item-action" id="list-birthyear-list" data-toggle="list" href="#list-birthyear" role="tab" aria-controls="birthyear">Année de naissance</a>
+                                    <a class="list-group-item list-group-item-action" id="list-sex-list" data-toggle="list" href="#list-sex" role="tab" aria-controls="sex">Sexe</a>
+                                    <a class="list-group-item list-group-item-action" id="list-cat-list" data-toggle="list" href="#list-cat" role="tab" aria-controls="cat">Catégorie</a>
+                                    <a class="list-group-item list-group-item-action" id="list-tooltip-list" data-toggle="list" href="#list-tooltip" role="tab" aria-controls="tooltip">Infobulle</a>
+                                    <a class="list-group-item list-group-item-action" id="list-classsize-list" data-toggle="list" href="#list-classsize" role="tab" aria-controls="classsize">Taille classe d'âge</a>
+                                    <a class="list-group-item list-group-item-action" id="list-beginfirstclass-list" data-toggle="list" href="#list-beginfirstclass" role="tab" aria-controls="beginfirstclass">Première classe d'âge</a>
+                                    <a class="list-group-item list-group-item-action" id="list-endlastclass-list" data-toggle="list" href="#list-endlastclass" role="tab" aria-controls="endlastclass">Dernière classe d'âge</a>
+                                    <a class="list-group-item list-group-item-action" id="list-cattable-list" data-toggle="list" href="#list-cattable" role="tab" aria-controls="cattable">Tableau des catégories</a>
+                                    <a class="list-group-item list-group-item-action" id="list-buildpyramid-list" data-toggle="list" href="#list-buildpyramid" role="tab" aria-controls="buildpyramid">Construire une pyramide</a>
+                                    <a class="list-group-item list-group-item-action" id="list-svgexport-list" data-toggle="list" href="#list-svgexport" role="tab" aria-controls="svgexport">Export SVG</a>
+                                </div>
+                            </div>
+                                <div class="col-sm-8">
+                                <div class="tab-content" id="nav-tabContent">
+                                    <div class="tab-pane fade show active" id="list-input" role="tabpanel" aria-labelledby="list-input-list">
+                                        <p class="text-justify">Le fichier CSV doit contenir :</p>
+                                        <ul>
+                                            <li>une ligne d'en-tête</li>
+                                            <li>une ligne par individu</li>
+                                            <li>une colonne pour l'année de naissance</li>
+                                            <li>une colonne pour le sexe</li>
+                                        </ul>
+                                        <p class="text-justify">Les colonnes Catégorie et Infobulle sont facultatives.</p>
+                                        <p class="text-justify">Le caractère délimiteur (virgule, point-virgule...) est normalement automatiquement détecté.</p>
+                                        <p class="text-justify">Une fois le fichier sélectionné, un aperçu de son contenu s'affiche.</p>
+                                        <p class="text-justify">Un fichier exemple avec des données aléatoires est disponible <a href="https://github.com/UMR-PASSAGES/pyramidage/blob/master/test_data/test_data_pyramidage.csv">ici</a>.</p>
+                                    </div>
+                                    <div class="tab-pane fade" id="list-year" role="tabpanel" aria-labelledby="list-year-list"><p class="text-justify">Choisissez l'année pour laquelle la pyramide sera valable. Il s'agit généralement de l'année en cours.</p></div>
+                                    <div class="tab-pane fade" id="list-birthyear" role="tabpanel" aria-labelledby="list-birthyear-list"><p class="text-justify">Sélectionnez la colonne du fichier CSV correspondant à l'année de naissance.</p></div>
+                                    <div class="tab-pane fade" id="list-sex" role="tabpanel" aria-labelledby="list-sex-list">
+                                        <p class="text-justify">Sélectionnez la colonne du fichier CSV correspondant au sexe.</p>
+                                        <p class="text-justify">Le sexe féminin peut être codé par, au choix, F, FEMME, FEMALE, XX.</p>
+                                        <p class="text-justify">Le sexe masculin peut être codé par, au choix, M, H, HOMME, MALE, XY.</p>
+                                    </div>
+                                    <div class="tab-pane fade" id="list-cat" role="tabpanel" aria-labelledby="list-cat-list">
+                                        <p class="text-justify">Cette option est facultative.</p>
+                                        <p class="text-justify">Vous pouvez choisir une colonne avec des catégories ; chaque individu sera représenté d'une couleur correspondant à sa catégorie.</p>
+                                        <p class="text-justify">Les couleurs sont personnalisable, ainsi que l'ordre dans lequel les catégories sont dessinées en partant de l'axe vertical de la pyramide.</p>
+                                        <p class="text-justify">Si vous ne choisissez aucune colonne, tous les individus seront représentés de la même couleur.</p>
+                                    </div>
+                                    <div class="tab-pane fade" id="list-tooltip" role="tabpanel" aria-labelledby="list-tooltip-list">
+                                        <p class="text-justify">Cette option est facultative.</p>
+                                        <p class="text-justify">Vous pouvez choisir une colonne correspondant à l'information de votre choix. Cette information sera disponible pour chaque individu dans une infobulle en le survolant avec la souris.</p>
+                                        <p class="text-justify">Cette information sera également récupérée dans l'export SVG via l'identifiant de chaque carré correspondant à un individu.</p>
+                                    </div>
+                                    <div class="tab-pane fade" id="list-classsize" role="tabpanel" aria-labelledby="list-classsize-list"><p class="text-justify">Choisissez ici la taille de chaque classe d'âge.</p></div>
+                                    <div class="tab-pane fade" id="list-beginfirstclass" role="tabpanel" aria-labelledby="list-beginfirstclass-list">
+                                        <p class="text-justify">Choisissez ici l'âge de début de la première classe d'âge. Une classe inférieure sera créée.</p>
+                                        <p class="text-justify">Par exemple, si vous choisissez 25, une classe sera créée pour les moins de 25 ans.</p>
+                                    </div>
+                                    <div class="tab-pane fade" id="list-endlastclass" role="tabpanel" aria-labelledby="list-endlastclass-list">
+                                        <p class="text-justify">Choisissez ici l'âge de fin de la dernière classe d'âge. Une classe supérieure sera créée.</p>
+                                        <p class="text-justify">Par exemple, si vous choisissez 65, une classe sera créée pour les plus de 65 ans.</p>
+                                    </div>
+                                    <div class="tab-pane fade" id="list-cattable" role="tabpanel" aria-labelledby="list-cattable-list">
+                                        <p class="text-justify">Ce tableau contient deux colonnes, pour le nom et la couleur de chaque catégorie.</p>
+                                        <p class="text-justify">Une fois le fichier CSV choisi, il contient par défaut une seule ligne avec une catégorie unique, et peut contenir plusieurs lignes si vous sélectionnez une colonne catégorie.</p>
+                                        <p class="text-justify">Il est possible de changer l'ordre des lignes du tableau par un glisser-déposer, ce qui modifie également l'ordre dans lequel les individus sont dessinés sur la pyramide des âges.</p>
+                                    </div>
+                                    <div class="tab-pane fade" id="list-buildpyramid" role="tabpanel" aria-labelledby="list-buildpyramid-list"><p class="text-justify">Après avoir choisi vos paramètres, cliquez sur ce bouton pour afficher la pyramide des âges.</p><p class="text-justify">Le graphique ne se met pas à jour automatiquement, il faut donc reconstruire la pyramide après avoir modifié un paramètre.</p></div>
+                                    <div class="tab-pane fade" id="list-svgexport" role="tabpanel" aria-labelledby="list-svgexport-list">
+                                        <p class="text-justify">Cliquez sur ce bouton pour obtenir un export SVG de la pyramide.</p>
+                                        <p class="text-justify">Chaque carré correspondant à un individu aura un identifiant reprenant l'information de la colonne infobulle si cette colonne a été sélectionnée.</p>
+                                        <p class="text-justify">Le SVG est un format vectoriel modifiable dans un logiciel de dessin tel qu'Inkscape ou Adobe Illustrator. Vous pourrez également le convertir dans un format image comme le JPG ou le PNG.</p>
+                                    </div>
+                                </div>
+                            </div>
+                      </div>
+                </div>
+            </div>
+            
+            <hr>
+                
+            <div class="row">
+                <div class="col">
+                    <h3><a id="maisencore">Mais encore ?</a></h3>
+
+                    <p class="text-justify">Pyramidage utilise la bibliothèque javascript <a href="https://d3js.org/">D3.js</a>. Le code complet est disponible <a href="https://github.com/UMR-PASSAGES/pyramidage/">ici</a> et est sous licence <a href="https://www.gnu.org/licenses/quick-guide-gplv3.fr.html">GPLv3</a>.</p>
+                    <p class="text-justify">Pour faire une remarque, une suggestion : julie.pierson [@] cnrs.fr</p>
+                    <p class="text-justify">Si vous avez besoin de citer Pyramidage (ça n'est pas obligé !) : <em>Julie Pierson, Pyramidage, Pôle ARD UMR 5319 Passages, 2019</em>.</p>
+                </div>
+            </div>
+            
         </div> <!-- end of container div -->
         
     
@@ -273,14 +297,14 @@
             var beginFirstClass;
             var beginLastClas;
             var colYear;
-            var colStatus;
+            var colCat;
             var colSex;
             var colTooltip;
             // male and female can be coded with different values
             var femaleSex = ['F', 'FEMME', 'FEMALE', 'XX'];
             var maleSex = ['H', 'M', 'HOMME', 'MALE', 'XY'];
             // graphic variables
-            var w = (window.innerWidth)/2;
+            var w = (window.innerWidth)*8/13;
             var h = 500;
             var barPadding = 2;
             var squareSide;
@@ -288,8 +312,8 @@
             
             // graph variables
             var inputArray;
-            var statusList;
-            var colorsForStatus = {};
+            var catList;
+            var colorsForCat = {};
             var dic_f;
             var dic_m;
             var max_x;
@@ -299,7 +323,7 @@
                         .append('svg')
                         .attr('width', w)
                         .attr('height', h)
-                        .style('background','#f4f4f4')
+                        .style('background','white')
                         .attr("class", 'svgClass');
             var div = d3.select("body").append("div") // div for tooltips
                 .attr("class", "tooltip")
@@ -328,9 +352,9 @@
             
             
             // get list of first value for each age class
-            function getClasses(beginFirstClass, beginLastClass,classSize) {
+            function getClasses(beginFirstClass, endLastClass,classSize) {
                 listBeginClass = [0];
-                for (i=beginFirstClass; i<= beginLastClass; i+=classSize) {
+                for (i=beginFirstClass; i<= endLastClass; i+=classSize) {
             	   listBeginClass.push(i);
                 }
                 return listBeginClass;
@@ -345,8 +369,8 @@
             	ageClass = age - (age-listBeginClass[1])%classSize
             	// replaces values below beginFirstClass by zero
             	if (age < beginFirstClass) { ageClass = 0};
-            	// replaces values above beginLastClass by beginLastClass
-            	if (age > beginLastClass) { ageClass = beginLastClass};
+            	// replaces values above endLastClass by endLastClass
+            	if (age > endLastClass) { ageClass = endLastClass};
             	nbAgeClass = listBeginClass.indexOf(ageClass);
             	return nbAgeClass;
             }
@@ -358,7 +382,7 @@
                 l = listBeginClass.map((n) => {return 0});
                 // for each age class
                 for (i=0; i<l.length; i++) {
-                	// for each status
+                	// for each category
                 	for (var key in dataset) {
                 	   l[i] = l[i] + dataset[key][i].length;
                 	}
@@ -370,15 +394,19 @@
             // create one graph from one object
             function createGraph(dataset, sex, max_x) {
             
-                // get color for each status, as an object where keys are status
+                // get color for each category, as an object where keys are categories
                 // keys are in the order chosen by user in html table
-                getColorsForStatus();
+                getColorsForCat();
 
-                // list which will contain last X for each age class so that statuses are stacked on top of the previous one
+                // list which will contain last X for each age class so that categories are stacked on top of the previous one
                 // this list contains at first as many 0 as age classes : [0,0,0,0,0,0,0] for ex.
                 lastX = listBeginClass.map((n) => {return 0});
                 
-                for (var key in colorsForStatus) {
+                // this is used to be sure that each id for svg element is unique
+                id = -1;
+                
+                // for each category
+                for (var key in colorsForCat) {
                     // for each age class
                     for (j=0; j<dataset[key].length; j++){ 
                         // add as many squares as people in that age class
@@ -392,9 +420,9 @@
                                                     else {return w/2 - lastX[j] + barPadding/2 - middleSpace/2}})
                           .attr("height", squareSide - barPadding)
                           .attr("width", squareSide - barPadding)
-                          .attr("fill", colorsForStatus[key])
+                          .attr("fill", colorsForCat[key])
                           .attr("class", function (d, i) { return i})
-                          .attr("id", function (d) {return d})
+                          .attr("id", function (d) {id = id + 1; console.log(d); if (d != '') {return id + sex + '-' + d} else {return id + sex}})
                           // tooltip
                           .on("mouseover", function(d) {
                               div.transition()
@@ -493,8 +521,8 @@
       
             
             // get as many colors as items from an array
-            function setColors(uniqueStatus) {
-                l = uniqueStatus.length
+            function setColors(uniqueCat) {
+                l = uniqueCat.length
                 // if 9 colors or less get colors from colorBrewer (http://colorbrewer2.org/)
                 if (l <= 9) {
                     colors = ['#66c2a5', '#fc8d62', '#8da0cb', '#e78ac3', '#a6d854', '#ffd92f', '#e5c494', '#b3b3b3']
@@ -509,53 +537,53 @@
                 }
             }
             
-            // update status table everytime a new CSV file is selected by user or a new status column is selected
-            function updateStatus() {
-                // get status list with all occurrences if status column is selected
-                colStatus = document.getElementById("colStatus").selectedIndex - 1;
-                if (colStatus != -1) {
-                	statusList = inputArray[colStatus];
+            // update categories table everytime a new CSV file is selected by user or a new category column is selected
+            function updateCat() {
+                // get category list with all occurrences if category column is selected
+                colCat = document.getElementById("colCat").selectedIndex - 1;
+                if (colCat != -1) {
+                	catList = inputArray[colCat];
             	   // get only unique values
-            	   uniqueStatus = [...new Set(statusList)];
-            	// else there's only one status : 'Tout'
+            	   uniqueCat = [...new Set(catList)];
+            	// else there's only one category : 'Tout'
             	} else {
-            	    statusList = Array(inputArray[0].length).fill('Tout');
-                    uniqueStatus = ['Tout'];
+            	    catList = Array(inputArray[0].length).fill('Tout');
+                    uniqueCat = ['Tout'];
             	}
             	// clean table
-            	table = document.getElementById("statusTableTbody");
+            	table = document.getElementById("catTableTbody");
             	for(var i = table.rows.length - 1 ; i >= 0 ; i--) {
                     table.deleteRow(i);
                 }
                 // get list of colors from colorbrewer
-                colors = setColors(uniqueStatus);
+                colors = setColors(uniqueCat);
                 // update table
-            	for (i=0; i<uniqueStatus.length; i++) {
+            	for (i=0; i<uniqueCat.length; i++) {
             		row = table.insertRow(-1);
             		cellName = row.insertCell(0);
-            		cellName.innerHTML = uniqueStatus[i];
+            		cellName.innerHTML = uniqueCat[i];
             		cellColor = row.insertCell(1);
-            		cellColor.innerHTML = '<input class="colorPicker" type="color" value="' + colors[i] + '">'
+            		cellColor.innerHTML = '<input class="colorPicker form-control" type="color" value="' + colors[i] + '">'
             	}
             	
             	// bind event to each colorPicker so that colors changed by user are updated
             	var colorPickers = document.getElementsByClassName("colorPicker");
                     for (var i = 0; i < colorPickers.length; i++) {
-                        colorPickers[i].addEventListener('change', getColorsForStatus, false);
+                        colorPickers[i].addEventListener('change', getColorsForCat, false);
                     }
             }
             
             
-            // get color for each status : {'A' : '#66c2a5', 'B' : '#fc8d62'}
-            function getColorsForStatus() {
-                colorsForStatus = {};
-            	var table = document.getElementById('statusTable');
+            // get color for each category : {'A' : '#66c2a5', 'B' : '#fc8d62'}
+            function getColorsForCat() {
+                colorsForCat = {};
+            	var table = document.getElementById('catTable');
                 for (var r = 1, n = table.rows.length; r < n; r++) {
-                    currentStatus = table.rows[r].cells[0].innerHTML;
+                    currentCat = table.rows[r].cells[0].innerHTML;
                     currentColor = table.rows[r].cells[1].children[0].value;
-                    colorsForStatus[currentStatus] = currentColor;
+                    colorsForCat[currentCat] = currentColor;
                 }
-                return colorsForStatus;
+                return colorsForCat;
             }
             
             
@@ -577,25 +605,25 @@
                         for(i = document.getElementById('colYear').options.length-1; i>=0; i--) {
                             document.getElementById('colYear').remove(i);
                             document.getElementById('colSex').remove(i);
-                            document.getElementById('colStatus').remove(i);
+                            document.getElementById('colCat').remove(i);
                             document.getElementById('colTooltip').remove(i);
                         }
                         // set an empty option (selected by default) for columns combobox
-                        // (if there's no empty option, the status table might get populated by lots of value which might be confusing)
+                        // (if there's no empty option, the category table might get populated by lots of value which might be confusing)
                         document.getElementById('colYear').options.add(new Option('-- aucune colonne--', ''));
                         document.getElementById('colSex').options.add(new Option('-- aucune colonne--', ''));
-                        document.getElementById('colStatus').options.add(new Option('-- aucune colonne--', ''));
+                        document.getElementById('colCat').options.add(new Option('-- aucune colonne--', ''));
                         document.getElementById('colTooltip').options.add(new Option('-- aucune colonne--', ''));
                         // set options for columns combobox
                         columnNames = results[1];
                         for (i = 0; i < columnNames.length; i++) {
                             document.getElementById('colYear').options.add(new Option(columnNames[i], columnNames[i]));
                             document.getElementById('colSex').options.add(new Option(columnNames[i], columnNames[i]));
-                            document.getElementById('colStatus').options.add(new Option(columnNames[i], columnNames[i]));
+                            document.getElementById('colCat').options.add(new Option(columnNames[i], columnNames[i]));
                             document.getElementById('colTooltip').options.add(new Option(columnNames[i], columnNames[i]));
                         }
-                        // update status table
-                        updateStatus();
+                        // update category table
+                        updateCat();
                     }
                 });
             }
@@ -609,25 +637,25 @@
             	for (i=1; i<listBeginClass.length-1; i++) {
             		ageLabels.push(String(listBeginClass[i]) + '-' + String(listBeginClass[i+1]));
             	}
-            	// last label, for ex. +65 if beginLastClass = 65
-            	ageLabels.push('+' + String(beginLastClass));
+            	// last label, for ex. +65 if endLastClass = 65
+            	ageLabels.push('+' + String(endLastClass));
             	return ageLabels;
             }
             
             
-            // class size, beginning of first class and of last class must be coherent
-            function setBeginLastClass() {
+            // class size, beginning of first class and end of last class must be coherent
+            function setEndLastClass() {
                 // initialize variables
                 var listBeginLastClass = [];
                 classSize = Number(document.getElementById("classSize").value);
                 beginFirstClass = Number(document.getElementById("beginFirstClass").value);
-            	// remove all elements from beginLastClass
-            	selectBox = document.getElementById("beginLastClass")
+            	// remove all elements from endLastClass
+            	selectBox = document.getElementById("endLastClass")
             	var i;
                 for(i = selectBox.options.length-1 ; i>=0 ; i--) {
                     selectBox.remove(i);
                 }
-            	// calculate possible values for beginLastClass
+            	// calculate possible values for endLastClass
             	var j = beginFirstClass + classSize
             	listBeginLastClass.push(j)
             	do {
@@ -655,30 +683,30 @@
             function prepareGraph() {
                 /*
                 Creates empty object upon which the graph will be based, one object per sex
-                keys are status, values are lists with as many values as age classes
-                values are list of names (or whatever) for persons in that age class and status
+                keys are categories, values are lists with as many values as age classes
+                values are list of names (or whatever) for persons in that age class and category
                 for ex. {'permanent workers':[[],['helen'],[],['kate','jane'],['emily','joan','sarah'],['jenna']], 
                 'temp workers':[['mary','tess','meg'],['mel'],[],[],[]] } with 5 age classes
                 */
-                listBeginClass = getClasses(beginFirstClass, beginLastClass, classSize);
+                listBeginClass = getClasses(beginFirstClass, endLastClass, classSize);
                 dic_f = {};
                 dic_m = {};
-                for (i=0; i<statusList.length; i++) {
-                	dic_f[statusList[i]] = [];
-                	dic_m[statusList[i]] = [];
+                for (i=0; i<catList.length; i++) {
+                	dic_f[catList[i]] = [];
+                	dic_m[catList[i]] = [];
                 	for (j=0; j<listBeginClass.length; j++) {
-                		dic_f[statusList[i]].push([]);
-                		dic_m[statusList[i]].push([]);
+                		dic_f[catList[i]].push([]);
+                		dic_m[catList[i]].push([]);
                 	}
                 }
                 
                 // fills this dictionary
                 for (i=0; i<inputArray[0].length; i++) {
                     nbAgeClass = getAgeClass(inputArray[colYear][i], currentYear, listBeginClass, classSize);
-                    if (colStatus != -1) {
-                        currentStatus = inputArray[colStatus][i];
+                    if (colCat != -1) {
+                        currentCat = inputArray[colCat][i];
                     } else {
-                    	currentStatus = 'Tout';
+                    	currentCat = 'Tout';
                     }
                     if (colTooltip != -1) {
                     	currentTooltip = inputArray[colTooltip][i];
@@ -686,10 +714,10 @@
                     	currentTooltip = ''
                     }
                 	if (femaleSex.indexOf(inputArray[colSex][i]) >= 0) {
-                        dic_f[currentStatus][nbAgeClass].push(currentTooltip);
+                        dic_f[currentCat][nbAgeClass].push(currentTooltip);
                 	}
                 	if (maleSex.indexOf(inputArray[colSex][i]) >= 0) {
-                        dic_m[currentStatus][nbAgeClass].push(currentTooltip);
+                        dic_m[currentCat][nbAgeClass].push(currentTooltip);
                 	}
                 }
                 
@@ -738,11 +766,11 @@
                 currentYear = Number(document.getElementById("currentYear").value);
                 colYear = document.getElementById("colYear").selectedIndex -1;
                 colSex = document.getElementById("colSex").selectedIndex - 1;
-                colStatus = document.getElementById("colStatus").selectedIndex - 1;
+                colCat = document.getElementById("colCat").selectedIndex - 1;
                 colTooltip = document.getElementById("colTooltip").selectedIndex - 1;
                 classSize = Number(document.getElementById("classSize").value);
                 beginFirstClass = Number(document.getElementById("beginFirstClass").value);
-                beginLastClass = Number(document.getElementById("beginLastClass").value);
+                endLastClass = Number(document.getElementById("endLastClass").value);
                 
                 // a CSV file must be selected
                 if (document.getElementById('inputFile').files[0] == null) {
@@ -790,18 +818,18 @@
             // no CSV file is selected when page is (re)loaded
             document.getElementById('inputFile').value = '';
             
-            // populate list with possible values for beginning of last age class
-            setBeginLastClass();
+            // populate list with possible values for end of last age class
+            setEndLastClass();
             
             // when CSV file is selected by user, get column names etc. so that user can choose parameters
             document.getElementById("inputFile").addEventListener('input', readCsv);
             
-            // update status table when user changes status column
-            document.getElementById("colStatus").addEventListener('change', updateStatus);
+            // update category table when user changes category column
+            document.getElementById("colCat").addEventListener('change', updateCat);
             
-            // update beginLastClass when user changes classSize or beginFirstClass
-            document.getElementById("classSize").addEventListener('input', setBeginLastClass);
-            document.getElementById("beginFirstClass").addEventListener('input', setBeginLastClass);
+            // update endLastClass when user changes classSize or beginFirstClass
+            document.getElementById("classSize").addEventListener('input', setEndLastClass);
+            document.getElementById("beginFirstClass").addEventListener('input', setEndLastClass);
             
             // when user wants to create pyramid
             document.getElementById("createGraph").addEventListener('click', letsGraph);

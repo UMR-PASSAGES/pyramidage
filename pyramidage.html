@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+
+<html>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <head>
+    	<title>Pyramidage</title>
+    	<meta charset="utf-8" />
+    	<link rel="stylesheet" href="css/styles.css"/>
+        <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+        <script src="js/jquery-3.4.1.min.js"></script>
+        <script src="js/jquery-ui.min.js"></script>
+        <script src="js/d3.min.js"></script>
+        <script src="js/papaparse.min.js"></script>
+        <script src="js/FileSaver.min.js"></script>
+    </head>
+    <style>
+        div.tooltip {
+            position: absolute;
+            text-align: center;
+            width: 60px;
+            height: 28px;
+            padding: 2px;
+            font: 12px sans-serif;
+            background: white;
+            border: 0px;
+            border-radius: 8px;
+            pointer-events: none;
+            }
+            
+    </style>    
+    
+    <body class="bg-light">
+        <div class="containe">
+            <h2>Pyramidage</h2>
+            <p>blabla blabla blabla</p>
+            
+            <div class="row">
+                <div class="col" id="col1">
+                    <!-- input CSV file -->
+                    <div class="col">
+                        <input type="file" class="form-control-file" id="inputFile" accept=".csv" name="Fichier CSV en entrée"/>
+                    </div>
+                    
+                    <!-- div for CSV preview -->
+                    <div class="col" id="divPreview">
+                    </div>
+                    
+                    <!-- current year -->
+                    <div class="col">
+                        <label for="currentYear">Année :</label>
+                        <input class="form-control" type="number" id="currentYear" min="1000" max="2099" step="1" value="2019" />
+                    </div>
+                    
+                    <!-- choose columns -->
+                    <div class="row">
+                        <div class="col">
+                            <label for="colYear">Année de naissance :</label>
+                            <select class="custom-select d-block w-100" id="colYear"></select>
+                        </div>
+                        <div class="col">
+                            <label for="colSex">Sexe :</label>
+                            <select class="custom-select d-block w-100" id="colSex"></select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <label for="colStatus">Statut :</label>
+                            <select class="custom-select d-block w-100" id="colStatus"></select>
+                        </div>
+                        <div class="col">
+                            <label for="colTooltip">Infobulle :</label>
+                            <select class="custom-select d-block w-100" id="colTooltip"></select>
+                        </div>
+                    </div>
+                    
+                    <!-- class size -->
+                    <div class="col">
+                        <label for="classSize">Taille des classes d'âge (en année) :</label>
+                        <input class="form-control" type="number" id="classSize" min="1" max="1000" step="1" value="5" />
+                    </div>
+                    
+                    <!-- beginning of first age class -->
+                    <div class="col">
+                        <label for="beginFirstClass">Début de la 1ère classe d'âge (en années) :</label>
+                        <input class="form-control" type="number" id="beginFirstClass" min="0" max="1000" step="1" value="25" />
+                    </div>
+                    
+                    <!-- beginning of last age class -->
+                    <div class="col">
+                        <label for="beginLastClass">Début de la dernière classe d'âge (en années) :</label>
+                        <select class="custom-select d-block w-20" id="beginLastClass"></select>
+                    </div>
+                    
+                    <!-- status table -->
+                    <div class="col">
+                        <table class="table" id="statusTable">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Statut</th>
+                                    <th scope="col">Couleur</th>
+                                </tr>
+                            </thead>
+                            <tbody id="statusTableTbody">
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="row">
+                        <!-- create graph -->
+                        <div class="col">
+                            <button type="button" class="btn btn-primary" id="createGraph">Construire une pyramide !</button> 
+                        </div>
+                         
+                        <!-- output SVG file -->
+                        <div class="col">
+                            <form onsubmit="download(this['name'].value)">
+                            <input type="submit" value="Export SVG">
+                        </div>
+                    </div>
+                    
+                </div>
+                
+                <div class="col" id="col2">
+                </div>
+        
+            </div> <!-- end of row div -->
+        </div> <!-- end of container div -->
+        
+    
+        <script>
+        
+            /*
+            VARIABLES
+            */
+            
+            // user variables
+            var currentYear;
+            var classSize;
+            var beginFirstClass;
+            var beginLastClas;
+            var colYear;
+            var colStatus;
+            var colSex;
+            var colTooltip;
+            // male and female can be coded with different values
+            var femaleSex = ['F', 'FEMME', 'FEMALE', 'XX'];
+            var maleSex = ['H', 'M', 'HOMME', 'MALE', 'XY'];
+            // graphic variables
+            var w = (window.innerWidth)/2;
+            var h = 500;
+            var barPadding = 2;
+            var squareSide;
+            //var colors = {'A' : 'rgb(0,0,255)', 'B' : 'rgb(255,255,0)', 'C' : 'green'}
+            
+            // graph variables
+            var inputArray;
+            var statusList;
+            var colorsForStatus = {};
+            var dic_f;
+            var dic_m;
+            var max_x;
+            var graphMargin = 20; // margin on top, bottom, left and right of graph
+            var middleSpace = 40; // margin between male and female graph, for age axis
+            var svg = d3.select('#col2')
+                        .append('svg')
+                        .attr('width', w)
+                        .attr('height', h)
+                        .style('background','#f4f4f4')
+                        .attr("class", 'svgClass');
+            var div = d3.select("body").append("div") // div for tooltips
+                .attr("class", "tooltip")
+                .style("opacity", 0);
+            var x_scale_f = d3.scaleLinear() // for x axis female
+            var x_scale_m = d3.scaleLinear() // for x axis male
+            var y_scale_f = d3.scaleBand() // for y axis female
+            var y_scale_m = d3.scaleBand() // for y axis male
+              
+            
+            /*
+            FUNCTIONS
+            */
+            
+            // make an array of arrays from CSV file, one array per column
+            function csvToArray(inputArray) {
+                // transpose array to get one item per column instead of one per row
+                inputArray = inputArray[0].map((col, i) => inputArray.map(row => row[i]));
+    	        // get column names and removes them from data
+    	        columnNames = []
+    	        for(i=0; i<inputArray.length; i++) {
+    	           columnNames.push(inputArray[i].shift());
+    	        }
+                return [inputArray, columnNames];
+            }
+            
+            
+            // get list of first value for each age class
+            function getClasses(beginFirstClass, beginLastClass,classSize) {
+                listBeginClass = [0];
+                for (i=beginFirstClass; i<= beginLastClass; i+=classSize) {
+            	   listBeginClass.push(i);
+                }
+                return listBeginClass;
+            }
+            
+            
+            // transforms birth year in number of corresponding age class
+            // for ex. 37 -> 3 if listBeginClass = [0,25,30,35,40,45,50]
+            function getAgeClass(birthYear, currentYear, listBeginClass, classSize) {
+                // transforms birth year into beginning of age class, for ex. 37 -> 35
+            	age = currentYear - birthYear;
+            	ageClass = age - (age-listBeginClass[1])%classSize
+            	// replaces values below beginFirstClass by zero
+            	if (age < beginFirstClass) { ageClass = 0};
+            	// replaces values above beginLastClass by beginLastClass
+            	if (age > beginLastClass) { ageClass = beginLastClass};
+            	nbAgeClass = listBeginClass.indexOf(ageClass);
+            	return nbAgeClass;
+            }
+            
+            
+            // get max for x axis, = max nb of people in the same age class, for one sex
+            function getMaxX(dataset, listBeginClass) {
+                // this list will contain as many zeros as age classes
+                l = listBeginClass.map((n) => {return 0});
+                // for each age class
+                for (i=0; i<l.length; i++) {
+                	// for each status
+                	for (var key in dataset) {
+                	   l[i] = l[i] + dataset[key][i].length;
+                	}
+                }
+            	return Math.max.apply(Math, l);
+            }
+            
+            
+            // create one graph from one object
+            function createGraph(dataset, sex, max_x) {
+            
+                // get color for each status, as an object where keys are status
+                // keys are in the order chosen by user in html table
+                getColorsForStatus();
+
+                // list which will contain last X for each age class so that statuses are stacked on top of the previous one
+                // this list contains at first as many 0 as age classes : [0,0,0,0,0,0,0] for ex.
+                lastX = listBeginClass.map((n) => {return 0});
+                
+                for (var key in colorsForStatus) {
+                    // for each age class
+                    for (j=0; j<dataset[key].length; j++){ 
+                        // add as many squares as people in that age class
+                        svg.selectAll("rect".i)
+                          .data(dataset[key][j])
+                          .enter()
+                          .append("rect")
+                          .attr("y", h-graphMargin-squareSide-j*squareSide)
+                          .attr("x", function () { lastX[j] = lastX[j]+squareSide;
+                                                    if(sex == 'f') {return w/2 + lastX[j] - squareSide + barPadding/2 + middleSpace/2} 
+                                                    else {return w/2 - lastX[j] + barPadding/2 - middleSpace/2}})
+                          .attr("height", squareSide - barPadding)
+                          .attr("width", squareSide - barPadding)
+                          .attr("fill", colorsForStatus[key])
+                          .attr("class", function (d, i) { return i})
+                          .attr("id", function (d) {return d})
+                          // tooltip
+                          .on("mouseover", function(d) {
+                              div.transition()
+                                  .duration(200)
+                                  .style("opacity", function() {if (colTooltip != -1) {return 0.9} else {return 0}});
+                              div.html(d)
+                                  .style("left", (d3.event.pageX) + "px")
+                                  .style("top", (d3.event.pageY - 28) + "px")
+                              d3.select(this)
+                                  .style("opacity", function() {if (colTooltip != -1) {return 0.5} else {return 1}});
+                              })
+                         .on("mouseout", function(d) {
+                           div.transition()
+                             .duration(500)
+                             .style("opacity", 0)
+                             d3.select(this)
+                                .style("opacity", 1);
+                           });
+                    }
+                }
+                
+                // calculate                 
+                
+                // add x axis
+                if (sex == 'f') {
+                    x_axis_f = d3.axisBottom()
+                        .scale(x_scale_f)
+                        //.tickSize(0,10)
+                        .ticks(max_x);
+                    svg.append('g')
+                        .attr('transform', 'translate(0, ' + String(h-graphMargin) + ')')
+                        .attr("class", "x axis")
+                        .call(x_axis_f);
+                } else {
+                	x_axis_m = d3.axisBottom()
+                        .scale(x_scale_m)
+                        //.tickSize(0,10)
+                        .ticks(max_x);
+                    svg.append('g')
+                        .attr('transform', 'translate(0, ' + String(h-graphMargin) + ')')
+                        .attr("class", "x axis")
+                        .call(x_axis_m);
+                }
+                
+                // add y axis
+                if (sex == 'f') {
+                    y_axis_f = d3.axisRight()
+                            .scale(y_scale_f)
+                            .tickSize(0,10)
+                            .tickValues([]);
+                        svg.append('g')
+                            .attr('transform', 'translate(' + String(w/2 + middleSpace/2) + ', 0)')
+                            .attr("class", "y axis")
+                            .call(y_axis_f);
+                } else {
+                	y_axis_m = d3.axisRight()
+                            .scale(y_scale_m)
+                            .tickSize(0,10);
+                        svg.append('g')
+                            .attr('transform', 'translate(' + String(w/2 - middleSpace/2) + ', 0)')
+                            .attr("class", "y axis")
+                            .call(y_axis_m);
+                }
+
+            }
+            
+            // display CSV preview as an html table
+            function csvPreview(inputArray) {
+                // remove existing preview if one
+                document.getElementById("divPreview").innerHTML = '';
+                // add current file preview
+                var container = d3.select("#divPreview")
+                    .append("table")
+                        .attr("id", "preview")
+                        .attr("class", "table")
+
+                    .selectAll("tr")
+                        .data(inputArray.slice(0,6)).enter()
+                        .append("tr")
+
+                    .selectAll("td")
+                        .data(function(d) { return d; }).enter()
+                        .append("td")
+                        .text(function(d) { return d; });
+            }
+            
+            // get random color (from https://stackoverflow.com/a/1484514)
+            function getRandomColor() {
+              var letters = '0123456789ABCDEF';
+              var color = '#';
+              for (var i = 0; i < 6; i++) {
+                color += letters[Math.floor(Math.random() * 16)];
+              }
+              return color;
+            }
+      
+            
+            // get as many colors as items from an array
+            function setColors(uniqueStatus) {
+                l = uniqueStatus.length
+                // if 9 colors or less get colors from colorBrewer (http://colorbrewer2.org/)
+                if (l <= 9) {
+                    colors = ['#66c2a5', '#fc8d62', '#8da0cb', '#e78ac3', '#a6d854', '#ffd92f', '#e5c494', '#b3b3b3']
+                    return colors.slice(l - 1);
+                // if more than 9 colors get random colors
+                } else {
+                    colors = [];
+                	for (i=0; i<l; i++) {
+                		colors.push(getRandomColor());
+                	}
+                	return colors;
+                }
+            }
+            
+            // update status table everytime a new CSV file is selected by user or a new status column is selected
+            function updateStatus() {
+                // get status list with all occurrences if status column is selected
+                colStatus = document.getElementById("colStatus").selectedIndex - 1;
+                if (colStatus != -1) {
+                	statusList = inputArray[colStatus];
+            	   // get only unique values
+            	   uniqueStatus = [...new Set(statusList)];
+            	// else there's only one status : 'Tout'
+            	} else {
+            	    statusList = Array(inputArray[0].length).fill('Tout');
+                    uniqueStatus = ['Tout'];
+            	}
+            	// clean table
+            	table = document.getElementById("statusTableTbody");
+            	for(var i = table.rows.length - 1 ; i >= 0 ; i--) {
+                    table.deleteRow(i);
+                }
+                // get list of colors from colorbrewer
+                colors = setColors(uniqueStatus);
+                // update table
+            	for (i=0; i<uniqueStatus.length; i++) {
+            		row = table.insertRow(-1);
+            		cellName = row.insertCell(0);
+            		cellName.innerHTML = uniqueStatus[i];
+            		cellColor = row.insertCell(1);
+            		cellColor.innerHTML = '<input class="colorPicker" type="color" value="' + colors[i] + '">'
+            	}
+            	
+            	// bind event to each colorPicker so that colors changed by user are updated
+            	var colorPickers = document.getElementsByClassName("colorPicker");
+                    for (var i = 0; i < colorPickers.length; i++) {
+                        colorPickers[i].addEventListener('change', getColorsForStatus, false);
+                    }
+            }
+            
+            
+            // get color for each status : {'A' : '#66c2a5', 'B' : '#fc8d62'}
+            function getColorsForStatus() {
+                colorsForStatus = {};
+            	var table = document.getElementById('statusTable');
+                for (var r = 1, n = table.rows.length; r < n; r++) {
+                    currentStatus = table.rows[r].cells[0].innerHTML;
+                    currentColor = table.rows[r].cells[1].children[0].value;
+                    colorsForStatus[currentStatus] = currentColor;
+                }
+                return colorsForStatus;
+            }
+            
+            
+            // put csv file content into a variable
+            function readCsv() {
+                // fetch csv content
+                inputCsv = document.getElementById('inputFile').files[0];
+                Papa.parse(inputCsv, {
+            	    header: false,
+            	    // once csv is parsed, read it
+            	    complete: function(results, file) {
+                        //console.log("Parsing complete:", results, file);
+                        inputArray = results['data'];
+                        // displays CSV preview
+                        csvPreview(inputArray);
+                        results = csvToArray(inputArray);
+                        inputArray = results[0];
+                        // remove options for columns combobox
+                        for(i = document.getElementById('colYear').options.length-1; i>=0; i--) {
+                            document.getElementById('colYear').remove(i);
+                            document.getElementById('colSex').remove(i);
+                            document.getElementById('colStatus').remove(i);
+                            document.getElementById('colTooltip').remove(i);
+                        }
+                        // set an empty option (selected by default) for columns combobox
+                        // (if there's no empty option, the status table might get populated by lots of value which might be confusing)
+                        document.getElementById('colYear').options.add(new Option('-- aucune colonne--', ''));
+                        document.getElementById('colSex').options.add(new Option('-- aucune colonne--', ''));
+                        document.getElementById('colStatus').options.add(new Option('-- aucune colonne--', ''));
+                        document.getElementById('colTooltip').options.add(new Option('-- aucune colonne--', ''));
+                        // set options for columns combobox
+                        columnNames = results[1];
+                        for (i = 0; i < columnNames.length; i++) {
+                            document.getElementById('colYear').options.add(new Option(columnNames[i], columnNames[i]));
+                            document.getElementById('colSex').options.add(new Option(columnNames[i], columnNames[i]));
+                            document.getElementById('colStatus').options.add(new Option(columnNames[i], columnNames[i]));
+                            document.getElementById('colTooltip').options.add(new Option(columnNames[i], columnNames[i]));
+                        }
+                        // update status table
+                        updateStatus();
+                    }
+                });
+            }
+            
+            
+            // generate labels for y axis, for ex. -25, 25-30, 30-35...
+            function getAgeLabels(listBeginClass) {
+                // first label is for ex. -25 if beginFirstClass is 25
+                ageLabels = ['-' + String(beginFirstClass)];
+                // following labels, 25-30, 30-35 etc.
+            	for (i=1; i<listBeginClass.length-1; i++) {
+            		ageLabels.push(String(listBeginClass[i]) + '-' + String(listBeginClass[i+1]));
+            	}
+            	// last label, for ex. +65 if beginLastClass = 65
+            	ageLabels.push('+' + String(beginLastClass));
+            	return ageLabels;
+            }
+            
+            
+            // class size, beginning of first class and of last class must be coherent
+            function setBeginLastClass() {
+                // initialize variables
+                var listBeginLastClass = [];
+                classSize = Number(document.getElementById("classSize").value);
+                beginFirstClass = Number(document.getElementById("beginFirstClass").value);
+            	// remove all elements from beginLastClass
+            	selectBox = document.getElementById("beginLastClass")
+            	var i;
+                for(i = selectBox.options.length-1 ; i>=0 ; i--) {
+                    selectBox.remove(i);
+                }
+            	// calculate possible values for beginLastClass
+            	var j = beginFirstClass + classSize
+            	listBeginLastClass.push(j)
+            	do {
+            	    j = j + classSize   
+                    listBeginLastClass.push(j);
+            	} while (j < 120)
+            	// populate select element with these values
+            	for (i=0 ; i<listBeginLastClass.length ; i++) {
+            		var option = document.createElement("option")
+            		option.text = listBeginLastClass[i];
+            		selectBox.add(option);
+            	}
+            	// get value from listBeginLastClass nearest 67
+            	def = 67 - (67 - beginFirstClass)%classSize;
+            	// set this value as default in select box
+            	if (listBeginLastClass.indexOf(def) != -1) {
+            		selectBox.value = def;
+            	} else {
+            		selectBox.value = listBeginLastClass[0];
+            	}
+            }
+            
+            
+            // create an object which will contain all the data needed to create the age pyramid
+            function prepareGraph() {
+                /*
+                Creates empty object upon which the graph will be based, one object per sex
+                keys are status, values are lists with as many values as age classes
+                values are list of names (or whatever) for persons in that age class and status
+                for ex. {'permanent workers':[[],['helen'],[],['kate','jane'],['emily','joan','sarah'],['jenna']], 
+                'temp workers':[['mary','tess','meg'],['mel'],[],[],[]] } with 5 age classes
+                */
+                listBeginClass = getClasses(beginFirstClass, beginLastClass, classSize);
+                dic_f = {};
+                dic_m = {};
+                for (i=0; i<statusList.length; i++) {
+                	dic_f[statusList[i]] = [];
+                	dic_m[statusList[i]] = [];
+                	for (j=0; j<listBeginClass.length; j++) {
+                		dic_f[statusList[i]].push([]);
+                		dic_m[statusList[i]].push([]);
+                	}
+                }
+                
+                // fills this dictionary
+                for (i=0; i<inputArray[0].length; i++) {
+                    nbAgeClass = getAgeClass(inputArray[colYear][i], currentYear, listBeginClass, classSize);
+                    if (colStatus != -1) {
+                        currentStatus = inputArray[colStatus][i];
+                    } else {
+                    	currentStatus = 'Tout';
+                    }
+                    if (colTooltip != -1) {
+                    	currentTooltip = inputArray[colTooltip][i];
+                    } else {
+                    	currentTooltip = ''
+                    }
+                	if (femaleSex.indexOf(inputArray[colSex][i]) >= 0) {
+                        dic_f[currentStatus][nbAgeClass].push(currentTooltip);
+                	}
+                	if (maleSex.indexOf(inputArray[colSex][i]) >= 0) {
+                        dic_m[currentStatus][nbAgeClass].push(currentTooltip);
+                	}
+                }
+                
+                // get max for x axis
+                max_f = getMaxX(dic_f, listBeginClass);                
+                max_m = getMaxX(dic_m, listBeginClass);
+                max_x = Math.max(max_f, max_m);
+                
+                // set square side so that graph fits in svg
+                squareSide = Math.min((w-2*graphMargin-middleSpace)/(max_x*2), (h-2*graphMargin)/listBeginClass.length);
+                
+                // set domain and range for x axis, female and male
+                x_scale_f.domain([0, max_x]);   
+                x_scale_f.range([w/2 + middleSpace/2, w/2 + max_x*squareSide + middleSpace/2]);   
+                x_scale_m.domain([0, max_x]);   
+                x_scale_m.range([w/2 - middleSpace/2, w/2 - max_x*squareSide - middleSpace/2]); 
+                
+                // set domain and range for y axis
+                ageLabels = getAgeLabels(listBeginClass);
+                y_scale_f.domain(ageLabels);
+                y_scale_f.range([h-graphMargin, h-graphMargin-listBeginClass.length*squareSide]);
+                y_scale_m.domain(ageLabels);
+                y_scale_m.range([h-graphMargin, h-graphMargin-listBeginClass.length*squareSide]);
+                
+            } // end of prepareGraph function
+            
+            
+            // download graph as svg
+            // see https://stackoverflow.com/questions/16870876/writing-html-form-data-to-a-txt-file-without-the-use-of-a-webserver
+            function download() {
+            	copyText = document.getElementById("col2").innerHTML;
+                var pom = document.createElement('a');
+                pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + 
+                encodeURIComponent(copyText));
+                pom.setAttribute('download', 'pyramidage.svg');
+                pom.style.display = 'none';
+                document.body.appendChild(pom);
+                pom.click();
+                document.body.removeChild(pom);
+            }
+            
+            
+            function letsGraph() {
+            
+                // retrieve user parameters
+                currentYear = Number(document.getElementById("currentYear").value);
+                colYear = document.getElementById("colYear").selectedIndex -1;
+                colSex = document.getElementById("colSex").selectedIndex - 1;
+                colStatus = document.getElementById("colStatus").selectedIndex - 1;
+                colTooltip = document.getElementById("colTooltip").selectedIndex - 1;
+                classSize = Number(document.getElementById("classSize").value);
+                beginFirstClass = Number(document.getElementById("beginFirstClass").value);
+                beginLastClass = Number(document.getElementById("beginLastClass").value);
+                
+                // a CSV file must be selected
+                if (document.getElementById('inputFile').files[0] == null) {
+                    window.alert("Choisissez un fichier CSV contenant vos données en cliquant sur le bouton Parcourir");
+                	return false;
+                }
+                // birth year and sex are mandatory
+                if ((colYear == -1) && (colSex == -1)) {
+                	window.alert("Choisissez une colonne pour l'année de naissance et pour le sexe");
+                	return false;
+                }
+                if (colYear == -1) {
+                	window.alert("Choisissez une colonne pour l'année de naissance");
+                	return false;
+                }
+                if (colSex == -1) {
+                	window.alert("Choisissez une colonne pour le sexe");
+                	return false;
+                }
+                
+                // preparing
+                prepareGraph();
+                
+                // remove all existing elements
+                svg.selectAll("*").remove();
+                
+            	// create graphic from dic_f and dic_m
+                createGraph(dic_f, 'f', max_x);
+                createGraph(dic_m, 'm', max_x);
+                
+            }
+        
+            
+            /*
+            SCRIPT
+            */
+            
+            // no CSV file is selected when page is (re)loaded
+            document.getElementById('inputFile').value = '';
+            
+            // populate list with possible values for beginning of last age class
+            setBeginLastClass();
+            
+            // when CSV file is selected by user, get column names etc. so that user can choose parameters
+            document.getElementById("inputFile").addEventListener('input', readCsv);
+            
+            // update status table when user changes status column
+            document.getElementById("colStatus").addEventListener('change', updateStatus);
+            
+            // update beginLastClass when user changes classSize or beginFirstClass
+            document.getElementById("classSize").addEventListener('input', setBeginLastClass);
+            document.getElementById("beginFirstClass").addEventListener('input', setBeginLastClass);
+            
+            // when user wants to create pyramid
+            document.getElementById("createGraph").addEventListener('click', letsGraph);
+            
+            // makes table sortable by drag and drop
+            $('tbody').sortable();    
+            
+            
+        </script>
+    </body>
+</html>

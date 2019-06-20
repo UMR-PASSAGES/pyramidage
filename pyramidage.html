@@ -422,7 +422,7 @@
                           .attr("width", squareSide - barPadding)
                           .attr("fill", colorsForCat[key])
                           .attr("class", function (d, i) { return i})
-                          .attr("id", function (d) {id = id + 1; console.log(d); if (d != '') {return id + sex + '-' + d} else {return id + sex}})
+                          .attr("id", function (d) {id = id + 1; if (d != '') {return id + sex + '-' + d} else {return id + sex}})
                           // tooltip
                           .on("mouseover", function(d) {
                               div.transition()
@@ -481,6 +481,7 @@
                 	y_axis_m = d3.axisRight()
                             .scale(y_scale_m)
                             .tickSize(0,10);
+                            //.tickPadding(5);
                         svg.append('g')
                             .attr('transform', 'translate(' + String(w/2 - middleSpace/2) + ', 0)')
                             .attr("class", "y axis")
@@ -633,9 +634,9 @@
             function getAgeLabels(listBeginClass) {
                 // first label is for ex. -25 if beginFirstClass is 25
                 ageLabels = ['-' + String(beginFirstClass)];
-                // following labels, 25-30, 30-35 etc.
+                // following labels, 25-29, 30-34, 35-39 etc.
             	for (i=1; i<listBeginClass.length-1; i++) {
-            		ageLabels.push(String(listBeginClass[i]) + '-' + String(listBeginClass[i+1]));
+            		ageLabels.push(String(listBeginClass[i]) + '-' + String(listBeginClass[i+1] - 1));
             	}
             	// last label, for ex. +65 if endLastClass = 65
             	ageLabels.push('+' + String(endLastClass));

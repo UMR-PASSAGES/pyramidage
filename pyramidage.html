@@ -594,11 +594,12 @@
             function readCsv() {
                 // fetch csv content
                 inputCsv = document.getElementById('inputFile').files[0];
+                // check if file name ends with .csv
                 if (inputCsv['name'].substr(inputCsv['name'].length - 4) != '.csv') {
                 	window.alert("Choisissez un fichier avec l'extension .csv");
                 	return false;
                 }
-                console.log(inputCsv['name']);
+                // CSV parsing
                 Papa.parse(inputCsv, {
             	    header: false,
             	    // once csv is parsed, read it

@@ -526,11 +526,11 @@
             // get as many colors as items from an array
             function setColors(uniqueCat) {
                 l = uniqueCat.length
-                // if 9 colors or less get colors from colorBrewer (http://colorbrewer2.org/)
+                // if 12 colors or less get colors from colorBrewer (http://colorbrewer2.org/)
                 if (l <= 9) {
                     colors = colorsCB;
-                    return colors.slice(l - 1);
-                // if more than 9 colors get random colors
+                    return colors.slice(0, l);
+                // if more than 12 colors get random colors
                 } else {
                     colors = [];
                 	for (i=0; i<l; i++) {

@@ -280,7 +280,7 @@
 
                     <p class="text-justify">Pyramidage utilise la bibliothèque javascript <a href="https://d3js.org/">D3.js</a>. Le code complet est disponible <a href="https://github.com/UMR-PASSAGES/pyramidage/">ici</a> et est sous licence <a href="https://www.gnu.org/licenses/quick-guide-gplv3.fr.html">GPLv3</a>.</p>
                     <p class="text-justify">Pour faire une remarque, une suggestion : julie.pierson [@] cnrs.fr</p>
-                    <p class="text-justify">Si vous avez besoin de citer Pyramidage (ça n'est pas obligé !) : <em>Julie Pierson, Pyramidage, Pôle ARD UMR 5319 Passages, 2019</em>.</p>
+                    <p class="text-justify">Si vous avez besoin de citer Pyramidage : <em>Julie Pierson, Pyramidage, Pôle ARD UMR 5319 Passages, 2019</em>.</p>
                 </div>
             </div>
             
@@ -594,6 +594,12 @@
             function readCsv() {
                 // fetch csv content
                 inputCsv = document.getElementById('inputFile').files[0];
+                if (inputCsv['name'].substr(inputCsv['name'].length - 3) != 'csv') {
+                	window.alert("Choisissez un fichier avec l'extension .csv");
+                	window.alert("Patate");
+                	return false;
+                }
+                console.log(inputCsv['name']);
                 Papa.parse(inputCsv, {
             	    header: false,
             	    // once csv is parsed, read it
@@ -815,7 +821,6 @@
             $("#inputFile").change(function() {
                 filename = this.files[0].name;
                 document.getElementById("fileName").innerHTML = filename;
-                console.log(filename);
             });
             
             // no CSV file is selected when page is (re)loaded

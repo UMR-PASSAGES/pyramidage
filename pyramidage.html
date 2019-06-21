@@ -258,6 +258,7 @@
                                         <p class="text-justify">Ce tableau contient deux colonnes, pour le nom et la couleur de chaque catégorie.</p>
                                         <p class="text-justify">Une fois le fichier CSV choisi, il contient par défaut une seule ligne avec une catégorie unique, et peut contenir plusieurs lignes si vous sélectionnez une colonne catégorie.</p>
                                         <p class="text-justify">Il est possible de changer l'ordre des lignes du tableau par un glisser-déposer, ce qui modifie également l'ordre dans lequel les individus sont dessinés sur la pyramide des âges.</p>
+                                        <p>Jusqu'à 12 couleurs, les couleurs sont issues d'une gamme qualitative proposée par <a href="http://colorbrewer2.org/">ColorBrewer</a>. Au-delà, il s'agit de couleurs aléatoires.</p>
                                     </div>
                                     <div class="tab-pane fade" id="list-buildpyramid" role="tabpanel" aria-labelledby="list-buildpyramid-list"><p class="text-justify">Après avoir choisi vos paramètres, cliquez sur ce bouton pour afficher la pyramide des âges.</p><p class="text-justify">Le graphique ne se met pas à jour automatiquement, il faut donc reconstruire la pyramide après avoir modifié un paramètre.</p></div>
                                     <div class="tab-pane fade" id="list-svgexport" role="tabpanel" aria-labelledby="list-svgexport-list">
@@ -309,7 +310,7 @@
             var h = 500;
             var barPadding = 2;
             var squareSide;
-            //var colors = {'A' : 'rgb(0,0,255)', 'B' : 'rgb(255,255,0)', 'C' : 'green'}
+            var colorsCB = ['#8dd3c7', '#ffffb3', '#bebada', '#fb8072', '#80b1d3', '#fdb462', '#b3de69', '#fccde5', '#d9d9d9', '#bc80bd', '#ccebc5', '#ffed6f'];
             
             // graph variables
             var inputArray;
@@ -527,7 +528,7 @@
                 l = uniqueCat.length
                 // if 9 colors or less get colors from colorBrewer (http://colorbrewer2.org/)
                 if (l <= 9) {
-                    colors = ['#66c2a5', '#fc8d62', '#8da0cb', '#e78ac3', '#a6d854', '#ffd92f', '#e5c494', '#b3b3b3']
+                    colors = colorsCB;
                     return colors.slice(l - 1);
                 // if more than 9 colors get random colors
                 } else {

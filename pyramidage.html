@@ -594,9 +594,8 @@
             function readCsv() {
                 // fetch csv content
                 inputCsv = document.getElementById('inputFile').files[0];
-                if (inputCsv['name'].substr(inputCsv['name'].length - 3) != 'csv') {
+                if (inputCsv['name'].substr(inputCsv['name'].length - 4) != '.csv') {
                 	window.alert("Choisissez un fichier avec l'extension .csv");
-                	window.alert("Patate");
                 	return false;
                 }
                 console.log(inputCsv['name']);

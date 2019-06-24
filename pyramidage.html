@@ -20,10 +20,10 @@
         
     </head>
     <style>
-        /* div#col2{
+        div#graph{
             border: 1px solid black;
             overflow: scroll;
-        } */
+        }
         div.tooltip {
             position: absolute;
             text-align: center;
@@ -180,6 +180,7 @@
                 </div>
                 
                 <div class="col-sm-8" id="col2">
+                    <div id="graph"></div>
                 </div>
             </div>
                 
@@ -317,15 +318,13 @@
             var maleSex = ['H', 'M', 'HOMME', 'MALE', 'XY'];
             
             // graphic variables
-            var w = (window.innerWidth)*8/13; // width of svg
-            var h = 500; // height of svg
+            var svg_width = (window.innerWidth)*8/13; // width of svg
+            var svg_height = 500; // height of svg
             var barPadding = 2; // padding between squares
             var squareSide; // size of square side
-            var minSquareSide = 5; // min value for square size ; svg becomes scrollable if it does not fit in svg with this value for square side
+            var minSquareSide = 10; // min value for square size ; svg becomes scrollable if it does not fit in svg with this value for square side
             // colors from ColorBrewer, to be used for categories when 12 categories or less
             var colorsCB = ['#8dd3c7', '#ffffb3', '#bebada', '#fb8072', '#80b1d3', '#fdb462', '#b3de69', '#fccde5', '#d9d9d9', '#bc80bd', '#ccebc5', '#ffed6f'];
-            
-            // graph variables
             var inputArray;
             var catList;
             var colorsForCat = {};
@@ -334,11 +333,10 @@
             var max_x;
             var graphMargin = 20; // margin on top, bottom, left and right of graph
             var middleSpace = 40; // margin between male and female graph, for age axis
-            var svg = d3.select('#col2')
-                .attr('viewBox', function() {return '0, 0, ' + w + ', ' + h})
+            var svg = d3.select('#graph')
                 .append('svg')
-                .attr('width', w)
-                .attr('height', h)
+                .attr('width', svg_width)
+                .attr('height', svg_height)
                 .style('background','white')
                 .attr("class", 'svgClass');
             var div = d3.select("body").append("div") // div for tooltips
@@ -430,14 +428,12 @@
                           .data(dataset[key][j])
                           .enter()
                           .append("rect")
-                          .attr("y", h-graphMargin-squareSide-j*squareSide)
+                          .attr("y", svg_height-graphMargin-squareSide-j*squareSide)
                           .attr("x", function () { lastX[j] = lastX[j]+squareSide;
-                                                    if(sex == 'f') {return w/2 + lastX[j] - squareSide + barPadding/2 + middleSpace/2} 
-                                                    else {return w/2 - lastX[j] + barPadding/2 - middleSpace/2}})
+                                                    if(sex == 'f') {return svg_width/2 + lastX[j] - squareSide + barPadding/2 + middleSpace/2} 
+                                                    else {return svg_width/2 - lastX[j] + barPadding/2 - middleSpace/2}})
                           .attr("height", squareSide - barPadding)
-                          //.attr("height", function() {if (squareSide >= 5) {return squareSide - barPadding;} else {return 5;}})
                           .attr("width", squareSide - barPadding)
-                          //.attr("width", function() {if (squareSide >= 5) {return squareSide - barPadding;} else {return 5;}})
                           .attr("fill", colorsForCat[key])
                           .attr("class", function (d, i) { return i})
                           .attr("id", function (d) {id = id + 1; if (d != '') {return id + sex + '-' + d} else {return id + sex}})
@@ -462,8 +458,6 @@
                     }
                 }
                 
-                // calculate                 
-                
                 // add x axis
                 if (sex == 'f') {
                     x_axis_f = d3.axisBottom()
@@ -471,7 +465,7 @@
                         //.tickSize(0,10)
                         .ticks(max_x);
                     svg.append('g')
-                        .attr('transform', 'translate(0, ' + String(h-graphMargin) + ')')
+                        .attr('transform', 'translate(0, ' + String(svg_height-graphMargin) + ')')
                         .attr("class", "x axis")
                         .call(x_axis_f);
                 } else {
@@ -480,7 +474,7 @@
                         //.tickSize(0,10)
                         .ticks(max_x);
                     svg.append('g')
-                        .attr('transform', 'translate(0, ' + String(h-graphMargin) + ')')
+                        .attr('transform', 'translate(0, ' + String(svg_height-graphMargin) + ')')
                         .attr("class", "x axis")
                         .call(x_axis_m);
                 }
@@ -492,7 +486,7 @@
                             .tickSize(0,10)
                             .tickValues([]);
                         svg.append('g')
-                            .attr('transform', 'translate(' + String(w/2 + middleSpace/2) + ', 0)')
+                            .attr('transform', 'translate(' + String(svg_width/2 + middleSpace/2) + ', 0)')
                             .attr("class", "y axis")
                             .call(y_axis_f);
                 } else {
@@ -501,7 +495,7 @@
                             .tickSize(0,10);
                             //.tickPadding(5);
                         svg.append('g')
-                            .attr('transform', 'translate(' + String(w/2 - middleSpace/2) + ', 0)')
+                            .attr('transform', 'translate(' + String(svg_width/2 - middleSpace/2) + ', 0)')
                             .attr("class", "y axis")
                             .call(y_axis_m);
                 }
@@ -575,13 +569,11 @@
             	   	  	dicCat[catList[i]] = 1
             	   	  }
             	   }
-            	   console.log(dicCat);
             	// else there's only one category : 'Tout'
             	} else {
             	    catList = Array(inputArray[0].length).fill('Tout');
                     uniqueCat = ['Tout'];
                     dicCat = {'Tout' : catList.length}
-                    console.log(dicCat);
             	}
             	// clean table
             	table = document.getElementById("catTableTbody");
@@ -666,6 +658,18 @@
                         }
                         // update category table
                         updateCat();
+                        
+                        // reinitializes width and height of svg
+                        svg_width = (window.innerWidth)*8/13; 
+                        svg_height = 500;
+                        svg
+                            .attr('width', svg_width)
+                            .attr('height', svg_height)
+                        // clean svg
+                        svg.selectAll("*").remove();
+                        // resize graph div to make it the same size as svg
+                        document.getElementById('graph').setAttribute("style","width:" + svg_width + "px");
+                        document.getElementById('graph').setAttribute("style","height:" + svg_height + "px");
                     }
                 });
             }
@@ -769,20 +773,38 @@
                 max_x = Math.max(max_f, max_m);
                 
                 // set square side so that graph fits in svg
-                squareSide = Math.min((w-2*graphMargin-middleSpace)/(max_x*2), (h-2*graphMargin)/listBeginClass.length);
+                squareSide = Math.min((svg_width-2*graphMargin-middleSpace)/(max_x*2), (svg_height-2*graphMargin)/listBeginClass.length);
+                // square side should not be less than minSquareSide, if necessary svg should be scrollable
+                if (squareSide < minSquareSide) {
+                	squareSide = minSquareSide;
+                	svg_width = Math.max(max_x * 2 * minSquareSide + middleSpace + 2 * graphMargin, svg_width);
+                	svg_height = Math.max(listBeginClass.length * minSquareSide + 2 * graphMargin, svg_height);
+                // it can be necessary to reset values (if user changed parameters)
+                } else {
+                	svg_width = (window.innerWidth)*8/13; 
+                    svg_height = 500;
+                    squareSide = Math.min((svg_width-2*graphMargin-middleSpace)/(max_x*2), (svg_height-2*graphMargin)/listBeginClass.length);
+                }
+                // resize svg
+                svg
+                    .attr('width', svg_width)
+                    .attr('height', svg_height)
+                // resize graph div to make it the same size as svg
+                document.getElementById('graph').setAttribute("style","width:" + svg_width + "px");
+                document.getElementById('graph').setAttribute("style","height:" + svg_height + "px");
                 
                 // set domain and range for x axis, female and male
                 x_scale_f.domain([0, max_x]);   
-                x_scale_f.range([w/2 + middleSpace/2, w/2 + max_x*squareSide + middleSpace/2]);   
+                x_scale_f.range([svg_width/2 + middleSpace/2, svg_width/2 + max_x*squareSide + middleSpace/2]);   
                 x_scale_m.domain([0, max_x]);   
-                x_scale_m.range([w/2 - middleSpace/2, w/2 - max_x*squareSide - middleSpace/2]); 
+                x_scale_m.range([svg_width/2 - middleSpace/2, svg_width/2 - max_x*squareSide - middleSpace/2]); 
                 
                 // set domain and range for y axis
                 ageLabels = getAgeLabels(listBeginClass);
                 y_scale_f.domain(ageLabels);
-                y_scale_f.range([h-graphMargin, h-graphMargin-listBeginClass.length*squareSide]);
+                y_scale_f.range([svg_height-graphMargin, svg_height-graphMargin-listBeginClass.length*squareSide]);
                 y_scale_m.domain(ageLabels);
-                y_scale_m.range([h-graphMargin, h-graphMargin-listBeginClass.length*squareSide]);
+                y_scale_m.range([svg_height-graphMargin, svg_height-graphMargin-listBeginClass.length*squareSide]);
                 
             } // end of prepareGraph function
             

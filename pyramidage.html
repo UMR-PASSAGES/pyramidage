@@ -16,6 +16,10 @@
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
     </head>
     <style>
+        div#col2{
+            border: 1px solid black;
+            overflow: scroll;
+        }
         div.tooltip {
             position: absolute;
             text-align: center;
@@ -146,6 +150,7 @@
                                     <tr>
                                         <th scope="col">Catégorie</th>
                                         <th scope="col">Couleur</th>
+                                        <th scope="col">Effectif</th>
                                     </tr>
                                 </thead>
                                 <tbody id="catTableTbody">
@@ -186,6 +191,7 @@
                             <li>Exporter le résultat en SVG pour pouvoir le modifier dans un logiciel de dessin vectoriel, en gardant comme identifiant l'information affichée dans l'infobulle.</li>
                         </ul>
                     </p>
+                    <p>Cet outil n'est pas pour l'instant adapté à de gros jeux de données.</p>
                     <p>Une pyramide des âges permet de visualiser la répartition de la population en fonction du sexe et de l'âge. Elle est consituée de deux histogrammes juxtaposées, traditionnellement les hommes à gauche et les femmes à droite. L'axe horizontal représente le nombre d'individus, et l'axe vertical l'âge des individus.</p>
                 </div>
             </div>
@@ -322,11 +328,12 @@
             var graphMargin = 20; // margin on top, bottom, left and right of graph
             var middleSpace = 40; // margin between male and female graph, for age axis
             var svg = d3.select('#col2')
-                        .append('svg')
-                        .attr('width', w)
-                        .attr('height', h)
-                        .style('background','white')
-                        .attr("class", 'svgClass');
+                .attr('viewBox', function() {return '0, 0, ' + w + ', ' + h})
+                .append('svg')
+                .attr('width', w)
+                .attr('height', h)
+                .style('background','white')
+                .attr("class", 'svgClass');
             var div = d3.select("body").append("div") // div for tooltips
                 .attr("class", "tooltip")
                 .style("opacity", 0);
@@ -421,7 +428,9 @@
                                                     if(sex == 'f') {return w/2 + lastX[j] - squareSide + barPadding/2 + middleSpace/2} 
                                                     else {return w/2 - lastX[j] + barPadding/2 - middleSpace/2}})
                           .attr("height", squareSide - barPadding)
+                          //.attr("height", function() {if (squareSide >= 5) {return squareSide - barPadding;} else {return 5;}})
                           .attr("width", squareSide - barPadding)
+                          //.attr("width", function() {if (squareSide >= 5) {return squareSide - barPadding;} else {return 5;}})
                           .attr("fill", colorsForCat[key])
                           .attr("class", function (d, i) { return i})
                           .attr("id", function (d) {id = id + 1; if (d != '') {return id + sex + '-' + d} else {return id + sex}})
@@ -527,7 +536,7 @@
             function setColors(uniqueCat) {
                 l = uniqueCat.length
                 // if 12 colors or less get colors from colorBrewer (http://colorbrewer2.org/)
-                if (l <= 9) {
+                if (l <= colorsCB.length) {
                     colors = colorsCB;
                     return colors.slice(0, l);
                 // if more than 12 colors get random colors
@@ -539,6 +548,7 @@
                 	return colors;
                 }
             }
+
             
             // update categories table everytime a new CSV file is selected by user or a new category column is selected
             function updateCat() {
@@ -548,10 +558,23 @@
                 	catList = inputArray[colCat];
             	   // get only unique values
             	   uniqueCat = [...new Set(catList)];
+            	   // create object where keys are unique categories and values are stocks for this category
+            	   // for ex. {'cat1' : 5, 'cat2' : 12, 'cat3' : 1}
+            	   dicCat = {};
+            	   for (i=0 ; i<catList.length ; i++) {
+            	   	  if (dicCat[catList[i]]) { 
+            	   	      dicCat[catList[i]] = dicCat[catList[i]] + 1
+            	   	  } else {
+            	   	  	dicCat[catList[i]] = 1
+            	   	  }
+            	   }
+            	   console.log(dicCat);
             	// else there's only one category : 'Tout'
             	} else {
             	    catList = Array(inputArray[0].length).fill('Tout');
                     uniqueCat = ['Tout'];
+                    dicCat = {'Tout' : catList.length}
+                    console.log(dicCat);
             	}
             	// clean table
             	table = document.getElementById("catTableTbody");
@@ -559,14 +582,16 @@
                     table.deleteRow(i);
                 }
                 // get list of colors from colorbrewer
-                colors = setColors(uniqueCat);
+                colors = setColors(Object.keys(dicCat));
                 // update table
-            	for (i=0; i<uniqueCat.length; i++) {
+            	for (var key in dicCat) {
             		row = table.insertRow(-1);
             		cellName = row.insertCell(0);
-            		cellName.innerHTML = uniqueCat[i];
+            		cellName.innerHTML = key;
             		cellColor = row.insertCell(1);
-            		cellColor.innerHTML = '<input class="colorPicker form-control" type="color" value="' + colors[i] + '">'
+            		cellColor.innerHTML = '<input class="colorPicker form-control" type="color" value="' + colors[Object.keys(dicCat).indexOf(key)] + '">';
+            		cellStock = row.insertCell(2);
+            		cellStock.innerHTML = dicCat[key];
             	}
             	
             	// bind event to each colorPicker so that colors changed by user are updated

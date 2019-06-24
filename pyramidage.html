@@ -267,7 +267,7 @@
                                     <div class="tab-pane fade" id="list-cattable" role="tabpanel" aria-labelledby="list-cattable-list">
                                         <p class="text-justify">Ce tableau contient deux colonnes, pour le nom et la couleur de chaque catégorie.</p>
                                         <p class="text-justify">Une fois le fichier CSV choisi, il contient par défaut une seule ligne avec une catégorie unique, et peut contenir plusieurs lignes si vous sélectionnez une colonne catégorie.</p>
-                                        <p class="text-justify">Il est possible de changer l'ordre des lignes du tableau par un glisser-déposer, ce qui modifie également l'ordre dans lequel les individus sont dessinés sur la pyramide des âges.</p>
+                                        <p class="text-justify">Il est possible de changer l'ordre des lignes du tableau par un glisser-déposer, ou bien en cliquant sur le nom des colonnes. L'ordre dans lequel les individus sont dessinés sur la pyramide des âges est alors modifié.</p>
                                         <p>Jusqu'à 12 couleurs, les couleurs sont issues d'une gamme qualitative proposée par <a href="http://colorbrewer2.org/">ColorBrewer</a>. Au-delà, il s'agit de couleurs aléatoires.</p>
                                     </div>
                                     <div class="tab-pane fade" id="list-buildpyramid" role="tabpanel" aria-labelledby="list-buildpyramid-list"><p class="text-justify">Après avoir choisi vos paramètres, cliquez sur ce bouton pour afficher la pyramide des âges.</p><p class="text-justify">Le graphique ne se met pas à jour automatiquement, il faut donc reconstruire la pyramide après avoir modifié un paramètre.</p></div>
@@ -304,22 +304,25 @@
             */
             
             // user variables
-            var currentYear;
-            var classSize;
-            var beginFirstClass;
-            var beginLastClas;
-            var colYear;
-            var colCat;
-            var colSex;
-            var colTooltip;
+            var currentYear; // year in which the pyramid is valid
+            var classSize; // size of age classes in years
+            var beginFirstClass; // min age of first age class ; an inferior class will be created (if 25, there will be a -25 class)
+            var endLastClass; // max age of last age class ; a superior class will be created (if 65, there will be a 65+ class)
+            var colYear; // index of CSV column for birth year
+            var colCat; // index of CSV column for category
+            var colSex; // index of CSV column for sex
+            var colTooltip; // index of CSV column for the value the user whishes to see as a tooltip
             // male and female can be coded with different values
             var femaleSex = ['F', 'FEMME', 'FEMALE', 'XX'];
             var maleSex = ['H', 'M', 'HOMME', 'MALE', 'XY'];
+            
             // graphic variables
-            var w = (window.innerWidth)*8/13;
-            var h = 500;
-            var barPadding = 2;
-            var squareSide;
+            var w = (window.innerWidth)*8/13; // width of svg
+            var h = 500; // height of svg
+            var barPadding = 2; // padding between squares
+            var squareSide; // size of square side
+            var minSquareSide = 5; // min value for square size ; svg becomes scrollable if it does not fit in svg with this value for square side
+            // colors from ColorBrewer, to be used for categories when 12 categories or less
             var colorsCB = ['#8dd3c7', '#ffffb3', '#bebada', '#fb8072', '#80b1d3', '#fdb462', '#b3de69', '#fccde5', '#d9d9d9', '#bc80bd', '#ccebc5', '#ffed6f'];
             
             // graph variables
@@ -685,7 +688,7 @@
             // class size, beginning of first class and end of last class must be coherent
             function setEndLastClass() {
                 // initialize variables
-                var listBeginLastClass = [];
+                var listEndLastClass = [];
                 classSize = Number(document.getElementById("classSize").value);
                 beginFirstClass = Number(document.getElementById("beginFirstClass").value);
             	// remove all elements from endLastClass
@@ -696,24 +699,24 @@
                 }
             	// calculate possible values for endLastClass
             	var j = beginFirstClass + classSize
-            	listBeginLastClass.push(j)
+            	listEndLastClass.push(j)
             	do {
             	    j = j + classSize   
-                    listBeginLastClass.push(j);
+                    listEndLastClass.push(j);
             	} while (j < 120)
             	// populate select element with these values
-            	for (i=0 ; i<listBeginLastClass.length ; i++) {
+            	for (i=0 ; i<listEndLastClass.length ; i++) {
             		var option = document.createElement("option")
-            		option.text = listBeginLastClass[i];
+            		option.text = listEndLastClass[i];
             		selectBox.add(option);
             	}
-            	// get value from listBeginLastClass nearest 67
+            	// get value from listEndLastClass nearest 67
             	def = 67 - (67 - beginFirstClass)%classSize;
             	// set this value as default in select box
-            	if (listBeginLastClass.indexOf(def) != -1) {
+            	if (listEndLastClass.indexOf(def) != -1) {
             		selectBox.value = def;
             	} else {
-            		selectBox.value = listBeginLastClass[0];
+            		selectBox.value = listEndLastClass[0];
             	}
             }
             

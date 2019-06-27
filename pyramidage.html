@@ -327,7 +327,7 @@
             var colorsCB = ['#8dd3c7', '#ffffb3', '#bebada', '#fb8072', '#80b1d3', '#fdb462', '#b3de69', '#fccde5', '#d9d9d9', '#bc80bd', '#ccebc5', '#ffed6f'];
             var inputArray;
             var catList;
-            var colorsForCat = {};
+            var colorsForCat = [];
             var dic_f;
             var dic_m;
             var max_x;
@@ -408,8 +408,8 @@
             // create one graph from one object
             function createGraph(dataset, sex, max_x) {
             
-                // get color for each category, as an object where keys are categories
-                // keys are in the order chosen by user in html table
+                // get color for each category, as an array of array : [['A', '#66c2a5'], ['B', '#fc8d62'], ...]
+                // categories are in the order chosen by user in html table
                 getColorsForCat();
 
                 // list which will contain last X for each age class so that categories are stacked on top of the previous one
@@ -420,12 +420,13 @@
                 id = -1;
                 
                 // for each category
-                for (var key in colorsForCat) {
+                //for (var key in colorsForCat) {
+                for (i=0 ; i<colorsForCat.length ; i++) {
                     // for each age class
-                    for (j=0; j<dataset[key].length; j++){ 
+                    for (j=0; j<dataset[colorsForCat[i][0]].length; j++){ 
                         // add as many squares as people in that age class
                         svg.selectAll("rect".i)
-                          .data(dataset[key][j])
+                          .data(dataset[colorsForCat[i][0]][j])
                           .enter()
                           .append("rect")
                           .attr("y", svg_height-graphMargin-squareSide-j*squareSide)
@@ -434,7 +435,7 @@
                                                     else {return svg_width/2 - lastX[j] + barPadding/2 - middleSpace/2}})
                           .attr("height", squareSide - barPadding)
                           .attr("width", squareSide - barPadding)
-                          .attr("fill", colorsForCat[key])
+                          .attr("fill", colorsForCat[i][1])
                           .attr("class", function (d, i) { return i})
                           .attr("id", function (d) {id = id + 1; if (d != '') {return id + sex + '-' + d} else {return id + sex}})
                           // tooltip
@@ -603,7 +604,8 @@
             
             
             // get color for each category : {'A' : '#66c2a5', 'B' : '#fc8d62'}
-            function getColorsForCat() {
+            function OLDgetColorsForCat() {
+                console.log('coucou');
                 colorsForCat = {};
             	var table = document.getElementById('catTable');
                 for (var r = 1, n = table.rows.length; r < n; r++) {
@@ -611,7 +613,21 @@
                     currentColor = table.rows[r].cells[1].children[0].value;
                     colorsForCat[currentCat] = currentColor;
                 }
+                console.log(colorsForCat);
                 return colorsForCat;
+            }
+            
+            // get color for each category : [['A', '#66c2a5'], ['B', '#fc8d62']]
+            function getColorsForCat() {
+            	colorsForCat = [];
+            	var table = document.getElementById('catTable');
+            	for (var r = 1, n = table.rows.length; r < n; r++) {
+            	    currentCat = table.rows[r].cells[0].innerHTML;
+                    currentColor = table.rows[r].cells[1].children[0].value;
+            	    colorsForCat.push([]);
+            	    colorsForCat[r-1].push(currentCat);
+            	    colorsForCat[r-1].push(currentColor);
+            	}
             }
             
             

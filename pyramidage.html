@@ -338,6 +338,7 @@
             var inputArray;
             var catList;
             var colorsForCat = [];
+            var colorScaleType;
             var dic_f;
             var dic_m;
             var max_x;
@@ -544,35 +545,27 @@
             }
       
             
-            // get as many colors as items from an array
-            function setColors(uniqueCat) {
+            // create color scale
+            function setColorScale(uniqueCat) {
                 l = uniqueCat.length
-                var colorScale = document.getElementById('colorScale').value;
-                console.log(colorScale);
-                switch(colorScale) {
-                // if qualitative color scale
+                colorScaleType = document.getElementById('colorScale').value;
+                switch(colorScaleType) {
+                    // if qualitative color scale
                     case 'quali':
-                        // if 12 colors or less get colors from colorBrewer (http://colorbrewer2.org/)
-                        if (l <= colorsCB.length) {
-                            colors = colorsCB;
-                            return colors.slice(0, l);
-                        // if more than 12 colors get random colors
-                        } else {
-                            colors = [];
-                        	for (i=0; i<l; i++) {
-                        		colors.push(getRandomColor());
-                        	}
-                        	return colors;
-                        }
-                        console.log(colors);
+                        var colorScale = d3.scaleOrdinal()
+                            .domain(uniqueCat)
+                            .range(d3.schemeCategory10);
                         break;
                     // if sequential color scale
-                    //case 'seq':
-                      //  colors = d3.scaleOrdinal(d3.schemeBlues[l]);
-                        //console.log(colors);
-                        //return colors;
-                        //break;
+                    case 'seq':
+                        // convert string array to number array
+                        uniqueCatNb = uniqueCat.map(Number);
+                        var colorScale = d3.scaleSequential()
+                            .domain([Math.min(...uniqueCatNb), Math.max(...uniqueCatNb)])
+                            .interpolator(d3.interpolatePuRd);
+                        break;
                 }
+                return colorScale;
             }
 
             
@@ -606,14 +599,19 @@
                     table.deleteRow(i);
                 }
                 // get list of colors
-                colors = setColors(Object.keys(dicCat));
+                colorScale = setColorScale(Object.keys(dicCat));
                 // update table
             	for (var key in dicCat) {
             		row = table.insertRow(-1);
             		cellName = row.insertCell(0);
             		cellName.innerHTML = key;
             		cellColor = row.insertCell(1);
-            		cellColor.innerHTML = '<input class="colorPicker form-control" type="color" value="' + colors[Object.keys(dicCat).indexOf(key)] + '">';
+            		// if sequential color scale, scale return a rgb color which must be converted to hex
+            		if (colorScaleType == 'seq') {
+            		  cellColor.innerHTML = '<input class="colorPicker form-control" type="color" value="' + d3.color(colorScale(Number(key))).hex() + '">';
+            		} else {
+            			cellColor.innerHTML = '<input class="colorPicker form-control" type="color" value="' + colorScale(key) + '">';
+            		}
             		cellStock = row.insertCell(2);
             		cellStock.innerHTML = dicCat[key];
             	}
@@ -626,18 +624,6 @@
                 $.bootstrapSortable({ applyLast: true })
             }
             
-            
-            // get color for each category : {'A' : '#66c2a5', 'B' : '#fc8d62'}
-            function OLDgetColorsForCat() {
-                colorsForCat = {};
-            	var table = document.getElementById('catTable');
-                for (var r = 1, n = table.rows.length; r < n; r++) {
-                    currentCat = table.rows[r].cells[0].innerHTML;
-                    currentColor = table.rows[r].cells[1].children[0].value;
-                    colorsForCat[currentCat] = currentColor;
-                }
-                return colorsForCat;
-            }
             
             // get color for each category : [['A', '#66c2a5'], ['B', '#fc8d62']]
             function getColorsForCat() {

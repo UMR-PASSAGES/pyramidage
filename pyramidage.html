@@ -12,6 +12,9 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
         <script src="js/jquery-ui.min.js"></script>
         <script src="js/d3.min.js"></script>
+        <script src="https://d3js.org/d3-color.v1.min.js"></script>
+        <script src="https://d3js.org/d3-interpolate.v1.min.js"></script>
+        <script src="https://d3js.org/d3-scale-chromatic.v1.min.js"></script>
         <script src="js/papaparse.min.js"></script>
         <script src="js/FileSaver.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
@@ -143,7 +146,14 @@
                         </div>   
                         <div class="col-sm-4">
                             <select class="custom-select d-block w-20" id="endLastClass"></select>
-                        </div>    
+                        </div>
+                        <!-- type of color scale -->
+                        <div class="col-sm-8">
+                            <label for="colorScale">Gamme de couleur :</label>
+                        </div>   
+                        <div class="col-sm-4">
+                            <select class="custom-select d-block w-20" id="colorScale"></select>
+                        </div>
                     </div>
                     <br>
                     <!-- category table -->
@@ -537,17 +547,31 @@
             // get as many colors as items from an array
             function setColors(uniqueCat) {
                 l = uniqueCat.length
-                // if 12 colors or less get colors from colorBrewer (http://colorbrewer2.org/)
-                if (l <= colorsCB.length) {
-                    colors = colorsCB;
-                    return colors.slice(0, l);
-                // if more than 12 colors get random colors
-                } else {
-                    colors = [];
-                	for (i=0; i<l; i++) {
-                		colors.push(getRandomColor());
-                	}
-                	return colors;
+                var colorScale = document.getElementById('colorScale').value;
+                console.log(colorScale);
+                switch(colorScale) {
+                // if qualitative color scale
+                    case 'quali':
+                        // if 12 colors or less get colors from colorBrewer (http://colorbrewer2.org/)
+                        if (l <= colorsCB.length) {
+                            colors = colorsCB;
+                            return colors.slice(0, l);
+                        // if more than 12 colors get random colors
+                        } else {
+                            colors = [];
+                        	for (i=0; i<l; i++) {
+                        		colors.push(getRandomColor());
+                        	}
+                        	return colors;
+                        }
+                        console.log(colors);
+                        break;
+                    // if sequential color scale
+                    //case 'seq':
+                      //  colors = d3.scaleOrdinal(d3.schemeBlues[l]);
+                        //console.log(colors);
+                        //return colors;
+                        //break;
                 }
             }
 
@@ -581,7 +605,7 @@
             	for(var i = table.rows.length - 1 ; i >= 0 ; i--) {
                     table.deleteRow(i);
                 }
-                // get list of colors from colorbrewer
+                // get list of colors
                 colors = setColors(Object.keys(dicCat));
                 // update table
             	for (var key in dicCat) {
@@ -605,7 +629,6 @@
             
             // get color for each category : {'A' : '#66c2a5', 'B' : '#fc8d62'}
             function OLDgetColorsForCat() {
-                console.log('coucou');
                 colorsForCat = {};
             	var table = document.getElementById('catTable');
                 for (var r = 1, n = table.rows.length; r < n; r++) {
@@ -613,7 +636,6 @@
                     currentColor = table.rows[r].cells[1].children[0].value;
                     colorsForCat[currentCat] = currentColor;
                 }
-                console.log(colorsForCat);
                 return colorsForCat;
             }
             
@@ -918,6 +940,13 @@
             
             // make table sortable by clicking on column names
             $.bootstrapSortable({ applyLast: true });
+            
+            // populate color scale dropdown list
+            document.getElementById('colorScale').options.add(new Option('qualitative', 'quali'));
+            document.getElementById('colorScale').options.add(new Option('séquentielle', 'seq'));
+            
+            // update category table when user changes color scale
+            document.getElementById("colorScale").addEventListener('change', updateCat);
             
             
         </script>

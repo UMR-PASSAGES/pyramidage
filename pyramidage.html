@@ -149,7 +149,14 @@
                         </div>
                         <!-- type of color scale -->
                         <div class="col-sm-8">
-                            <label for="colorScale">Gamme de couleur :</label>
+                            <label for="colorScaleType">Type de gamme de couleur :</label>
+                        </div>   
+                        <div class="col-sm-4">
+                            <select class="custom-select d-block w-20" id="colorScaleType"></select>
+                        </div>
+                        <!-- color scale -->
+                        <div class="col-sm-8">
+                            <label for="colorScaleType">Gamme de couleur :</label>
                         </div>   
                         <div class="col-sm-4">
                             <select class="custom-select d-block w-20" id="colorScale"></select>
@@ -548,7 +555,7 @@
             // create color scale
             function setColorScale(uniqueCat) {
                 l = uniqueCat.length
-                colorScaleType = document.getElementById('colorScale').value;
+                colorScaleType = document.getElementById('colorScaleType').value;
                 switch(colorScaleType) {
                     // if qualitative color scale
                     case 'quali':
@@ -739,6 +746,9 @@
                         // resize graph div to make it the same size as svg
                         document.getElementById('graph').setAttribute("style","width:" + svg_width + "px");
                         document.getElementById('graph').setAttribute("style","height:" + svg_height + "px");
+                        
+                        // update category table
+                        updateCat();
                     }
                 });
             }
@@ -976,11 +986,11 @@
             //$('#catTable').on('sorted', reorderColors);
             
             // populate color scale dropdown list
-            document.getElementById('colorScale').options.add(new Option('qualitative', 'quali'));
-            document.getElementById('colorScale').options.add(new Option('séquentielle', 'seq'));
+            document.getElementById('colorScaleType').options.add(new Option('qualitative', 'quali'));
+            document.getElementById('colorScaleType').options.add(new Option('séquentielle', 'seq'));
             
             // update category table when user changes color scale
-            document.getElementById("colorScale").addEventListener('change', updateCat);
+            document.getElementById("colorScaleType").addEventListener('change', updateCat);
             
             
         </script>

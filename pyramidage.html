@@ -554,7 +554,7 @@
                     case 'quali':
                         var colorScale = d3.scaleOrdinal()
                             .domain(uniqueCat)
-                            .range(d3.schemeCategory10);
+                            .range(d3.schemeSet3);
                         break;
                     // if sequential color scale
                     case 'seq':
@@ -639,7 +639,6 @@
             		      // else, use row number	
             		      } else {
             		          catColor = d3.color(colorScale(row.rowIndex)).hex();
-            		          console.log(catColor);
             		      }
             		  }
             		// qualitative color scale is simpler 
@@ -650,9 +649,25 @@
             		cellStock = row.insertCell(2);
             		cellStock.innerHTML = dicCat[key];
             	}
-                
+            	
+            	// stores categories and their colors
+            	getColorsForCat();
+            	
                 // make table sortable
                 $.bootstrapSortable({ applyLast: true })
+            }
+            
+            
+            // when category table get sorted, colors do not get reordered
+            function reorderColors() {
+                table = document.getElementById("catTableTbody");
+            	// for each row
+            	for (i=0 ; i<table.rows.length ; i++) {
+            	   // calculate color value
+            	   catColor = colorsForCat[i][1];
+            	   // fill table with this color value
+            	   table.rows[i].cells[1].innerHTML = '<input class="colorPicker form-control" type="color" value="' + catColor + '">';
+            	}   
             }
             
             
@@ -956,6 +971,9 @@
             
             // make table sortable by clicking on column names
             $.bootstrapSortable({ applyLast: true });
+            
+            // color order should not change when category table get sorted
+            //$('#catTable').on('sorted', reorderColors);
             
             // populate color scale dropdown list
             document.getElementById('colorScale').options.add(new Option('qualitative', 'quali'));

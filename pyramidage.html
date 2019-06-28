@@ -24,7 +24,7 @@
     </head>
     <style>
         div#graph{
-            border: 1px solid black;
+            border: 0px solid black;
             overflow: scroll;
         }
         div.tooltip {
@@ -574,7 +574,7 @@
                 // get category list with all occurrences if category column is selected
                 colCat = document.getElementById("colCat").selectedIndex - 1;
                 if (colCat != -1) {
-                	catList = inputArray[colCat];
+                    catList = inputArray[colCat];
             	   // get only unique values
             	   uniqueCat = [...new Set(catList)];
             	   // create object where keys are unique categories and values are stocks for this category
@@ -651,6 +651,7 @@
                 // CSV parsing
                 Papa.parse(inputCsv, {
             	    header: false,
+            	    skipEmptyLines: true,
             	    // once csv is parsed, read it
             	    complete: function(results, file) {
                         //console.log("Parsing complete:", results, file);

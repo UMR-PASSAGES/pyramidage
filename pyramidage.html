@@ -235,6 +235,8 @@
                                     <a class="list-group-item list-group-item-action" id="list-classsize-list" data-toggle="list" href="#list-classsize" role="tab" aria-controls="classsize">Taille classe d'âge</a>
                                     <a class="list-group-item list-group-item-action" id="list-beginfirstclass-list" data-toggle="list" href="#list-beginfirstclass" role="tab" aria-controls="beginfirstclass">Première classe d'âge</a>
                                     <a class="list-group-item list-group-item-action" id="list-endlastclass-list" data-toggle="list" href="#list-endlastclass" role="tab" aria-controls="endlastclass">Dernière classe d'âge</a>
+                                    <a class="list-group-item list-group-item-action" id="list-colorscaletype-list" data-toggle="list" href="#list-colorscaletype" role="tab" aria-controls="colorscaletype">Type de gamme de couleur</a>
+                                    <a class="list-group-item list-group-item-action" id="list-colorscale-list" data-toggle="list" href="#list-colorscale" role="tab" aria-controls="colorscale">Gamme de couleur</a>
                                     <a class="list-group-item list-group-item-action" id="list-cattable-list" data-toggle="list" href="#list-cattable" role="tab" aria-controls="cattable">Tableau des catégories</a>
                                     <a class="list-group-item list-group-item-action" id="list-buildpyramid-list" data-toggle="list" href="#list-buildpyramid" role="tab" aria-controls="buildpyramid">Construire une pyramide</a>
                                     <a class="list-group-item list-group-item-action" id="list-svgexport-list" data-toggle="list" href="#list-svgexport" role="tab" aria-controls="svgexport">Export SVG</a>
@@ -282,6 +284,14 @@
                                         <p class="text-justify">Choisissez ici l'âge de fin de la dernière classe d'âge. Une classe supérieure sera créée.</p>
                                         <p class="text-justify">Par exemple, si vous choisissez 65, une classe sera créée pour les plus de 65 ans.</p>
                                     </div>
+                                    <div class="tab-pane fade" id="list-colorscaletype" role="tabpanel" aria-labelledby="list-colorscaletype-list">
+                                        <p class="text-justify">Les gammes de couleur utilisées pour représenter les catégories peuvent être qualitatives, pour représenter des valeurs non ordonnées, ou bien séquentielles, pour représenter des valeurs ordonnées.</p>
+                                        <p class="text-justify">Si vos catégories sont des nombres et votre gamme de couleur de type séquentiel, les couleurs extrêmes de la gamme correspondront aux valeurs minimum et maximum de vos catégories, et les couleurs intermédiaires seront interpolées en fonction des valeurs.</p>
+                                        <p class="text-justify">Si vos catégories sont des textes et votre gamme de couleur de type séquentiel, les couleurs extrêmes de la gamme correspondront à la première et la dernière catégorie rencontrée dans votre fichier CSV.</p>
+                                    </div>
+                                    <div class="tab-pane fade" id="list-colorscale" role="tabpanel" aria-labelledby="list-colorscale-list">
+                                        <p class="text-justify">Différentes gammes de couleurs sont disponibles en fonction du type de gamme. Toutes ces gammes sont issues de <a href="http://colorbrewer2.org/">ColorBrewer</a> via le plugin D3.js <a href="https://github.com/d3/d3-scale-chromatic">d3-scale-chromatic</a>.</p>
+                                    </div>
                                     <div class="tab-pane fade" id="list-cattable" role="tabpanel" aria-labelledby="list-cattable-list">
                                         <p class="text-justify">Ce tableau contient deux colonnes, pour le nom et la couleur de chaque catégorie.</p>
                                         <p class="text-justify">Une fois le fichier CSV choisi, il contient par défaut une seule ligne avec une catégorie unique, et peut contenir plusieurs lignes si vous sélectionnez une colonne catégorie.</p>
@@ -306,8 +316,8 @@
                 <div class="col">
                     <h3><a id="maisencore">Mais encore ?</a></h3>
 
-                    <p class="text-justify">Pyramidage utilise la bibliothèque javascript <a href="https://d3js.org/">D3.js</a>. Le code complet est disponible <a href="https://github.com/UMR-PASSAGES/pyramidage/">ici</a> et est sous licence <a href="https://www.gnu.org/licenses/quick-guide-gplv3.fr.html">GPLv3</a>.</p>
-                    <p class="text-justify">Pour faire une remarque, une suggestion : julie.pierson [@] cnrs.fr</p>
+                    <p class="text-justify">Pyramidage utilise la bibliothèque javascript <a href="https://d3js.org/">D3.js</a>. Les gammes de couleurs sont celles de <a href="http://colorbrewer2.org">ColorBrewer</a>. Le code complet est disponible <a href="https://github.com/UMR-PASSAGES/pyramidage/">ici</a> et est sous licence <a href="https://www.gnu.org/licenses/quick-guide-gplv3.fr.html">GPLv3</a>.</p>
+                    <p class="text-justify">Pour faire une remarque, une suggestion : julie.pierson [@] cnrs.fr (ou @sigomatique sur Twitter).</p>
                     <p class="text-justify">Si vous avez besoin de citer Pyramidage : <em>Julie Pierson, Pyramidage, Pôle ARD UMR 5319 Passages, 2019</em>.</p>
                 </div>
             </div>
@@ -340,8 +350,10 @@
             var barPadding = 2; // padding between squares
             var squareSide; // size of square side
             var minSquareSide = 10; // min value for square size ; svg becomes scrollable if it does not fit in svg with this value for square side
-            // colors from ColorBrewer, to be used for categories when 12 categories or less
-            var colorsCB = ['#8dd3c7', '#ffffb3', '#bebada', '#fb8072', '#80b1d3', '#fdb462', '#b3de69', '#fccde5', '#d9d9d9', '#bc80bd', '#ccebc5', '#ffed6f'];
+            // qualitative color scales, 1st value is real name, 2nd is label
+            var qualiColorScales = [['schemeSet3', 'schemeSet3'], ['schemeCategory10', 'schemeCategory10'], ['schemeAccent', 'schemeAccent']]; 
+            // sequential color scales, 1st value is real name, 2nd is label
+            var seqColorScales = [['interpolatePurples', 'Violets'], ['interpolateReds', 'Rouges'], ['interpolateOranges', 'Oranges'], ['interpolateGreens', 'Verts'], ['interpolateBlues', 'Bleus']];
             var inputArray;
             var catList;
             var colorsForCat = [];
@@ -380,6 +392,35 @@
     	           columnNames.push(inputArray[i].shift());
     	        }
                 return [inputArray, columnNames];
+            }
+            
+            
+            // populate colorScale dropdown list
+            function populateColorScale() {
+                console.log('populateColorScale');
+                list = document.getElementById('colorScale');
+                // remove all options from list
+                for(i = list.options.length-1 ; i>=0 ; i--) {
+                        list.remove(i);
+                }
+                // get value for color scale type
+                colorScaleType = document.getElementById('colorScaleType').value;
+                // get corresponding color scale array
+                switch(colorScaleType) {
+                	case 'quali':
+                	   colorScaleList = qualiColorScales;
+                	   break;
+                	case 'seq':
+                	   colorScaleList = seqColorScales;
+                	   break;
+                }
+                // for each color scale
+                for (i=0 ; i<colorScaleList.length ; i++) {
+                    // add an option with value and text
+                    //list.options.add(new Option(colorScaleList[i][1], colorScaleList[i][0]));
+                    list.options.add(new Option(colorScaleList[i][1], colorScaleList[i][0]));
+                }
+
             }
             
             
@@ -554,14 +595,15 @@
             
             // create color scale
             function setColorScale(uniqueCat) {
-                l = uniqueCat.length
+                //l = uniqueCat.length
                 colorScaleType = document.getElementById('colorScaleType').value;
+                colorScaleName = document.getElementById('colorScale').value;
                 switch(colorScaleType) {
                     // if qualitative color scale
                     case 'quali':
                         var colorScale = d3.scaleOrdinal()
                             .domain(uniqueCat)
-                            .range(d3.schemeSet3);
+                            .range(d3[colorScaleName]);
                         break;
                     // if sequential color scale
                     case 'seq':
@@ -579,16 +621,20 @@
                         if (textValues == true) {
                             var colorScale = d3.scaleSequential()
                                 .domain([1, uniqueCat.length])
-                                .interpolator(d3.interpolatePuRd);
+                                .interpolator(d3[colorScaleName]);
                         // else, interpolates color based upon category values	
                         } else {
                             var colorScale = d3.scaleSequential()
                                 .domain([Math.min(...uniqueCatNb), Math.max(...uniqueCatNb)])
-                                .interpolator(d3.interpolatePuRd);
+                                .interpolator(d3[colorScaleName]);
                         }
                         break;
                 }
                 return colorScale;
+            }
+            
+            function mmmsetColorScale() {
+            	colorScale = document.getElementById('colorScale').value;
             }
             
 
@@ -657,8 +703,8 @@
             		cellStock.innerHTML = dicCat[key];
             	}
             	
-            	// stores categories and their colors
-            	getColorsForCat();
+            	//// stores categories and their colors
+            	//getColorsForCat();
             	
                 // make table sortable
                 $.bootstrapSortable({ applyLast: true })
@@ -985,12 +1031,19 @@
             // color order should not change when category table get sorted
             //$('#catTable').on('sorted', reorderColors);
             
-            // populate color scale dropdown list
+            // populate color scale type dropdown list
             document.getElementById('colorScaleType').options.add(new Option('qualitative', 'quali'));
             document.getElementById('colorScaleType').options.add(new Option('séquentielle', 'seq'));
             
-            // update category table when user changes color scale
+            // populate color scales qualitative and sequential dropdown lists
+            populateColorScale();
+            document.getElementById("colorScaleType").addEventListener('change', populateColorScale);
+            
+            // update category table when colorScaleType gets changed
             document.getElementById("colorScaleType").addEventListener('change', updateCat);
+            
+            // update category table when user changes color scale
+            document.getElementById("colorScale").addEventListener('change', updateCat);
             
             
         </script>

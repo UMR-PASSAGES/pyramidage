@@ -558,8 +558,11 @@
                         break;
                     // if sequential color scale
                     case 'seq':
-                        // convert string array to number array
-                        uniqueCatNb = uniqueCat.map(Number);
+                        // convert string array to number array without taking into account undefined values
+                        uniqueCatNb = [];
+                        for (i=0 ; i<uniqueCat.length ; i++) {
+                        	if (uniqueCat[i] != '') {uniqueCatNb.push(Number(uniqueCat[i]))}
+                        }
                         var colorScale = d3.scaleSequential()
                             .domain([Math.min(...uniqueCatNb), Math.max(...uniqueCatNb)])
                             .interpolator(d3.interpolatePuRd);
@@ -567,12 +570,13 @@
                 }
                 return colorScale;
             }
-
             
-            // update categories table everytime a new CSV file is selected by user or a new category column is selected
+
+            // update categories table everytime a new category column or color scale is selected
             function updateCat() {
-                // get category list with all occurrences if category column is selected
+                // if category column is selected
                 colCat = document.getElementById("colCat").selectedIndex - 1;
+                // get category list with all occurrences
                 if (colCat != -1) {
                     catList = inputArray[colCat];
             	   // get only unique values
@@ -587,19 +591,39 @@
             	   	  	dicCat[catList[i]] = 1
             	   	  }
             	   }
-            	// else there's only one category : 'Tout'
+            	// else there's only one category : 'Tout' ('All')
             	} else {
             	    catList = Array(inputArray[0].length).fill('Tout');
                     uniqueCat = ['Tout'];
                     dicCat = {'Tout' : catList.length}
             	}
+            	
+            	// disable or enable sequential color scale if categories are text or number
+            	for (i=0 ; i<uniqueCat.length ; i++) {
+            	    // if there is a value in category list which cannot be converted to number
+            		if (isNaN(Number(uniqueCat[i]))) {
+            		    // disable sequential color scale
+            			$("option[value='seq']")
+                            .attr("disabled", "disabled")
+                        // select qualitative color scale
+                        document.getElementById("colorScale").selectedIndex = 0;
+            			break;
+            	    // re-enable sequential color scale if categories can be converted to numbers
+            		} else {
+            			$("option[value='seq']")
+                            .removeAttr("disabled")
+            		}
+            	}
+            	
             	// clean table
             	table = document.getElementById("catTableTbody");
             	for(var i = table.rows.length - 1 ; i >= 0 ; i--) {
                     table.deleteRow(i);
                 }
-                // get list of colors
+                
+                // get color scale
                 colorScale = setColorScale(Object.keys(dicCat));
+                
                 // update table
             	for (var key in dicCat) {
             		row = table.insertRow(-1);
@@ -608,28 +632,30 @@
             		cellColor = row.insertCell(1);
             		// if sequential color scale, scale return a rgb color which must be converted to hex
             		if (colorScaleType == 'seq') {
-            		  cellColor.innerHTML = '<input class="colorPicker form-control" type="color" value="' + d3.color(colorScale(Number(key))).hex() + '">';
+            		  if (key == '') {
+            		  	catColor = '#000000'; // black for undefined values
+            		  } else {
+            		      catColor = d3.color(colorScale(Number(key))).hex()
+            		  }
+            		// qualitative color scale is simpler 
             		} else {
-            			cellColor.innerHTML = '<input class="colorPicker form-control" type="color" value="' + colorScale(key) + '">';
+            			catColor = colorScale(key)
             		}
+            		cellColor.innerHTML = '<input class="colorPicker form-control" type="color" value="' + catColor + '">';
             		cellStock = row.insertCell(2);
             		cellStock.innerHTML = dicCat[key];
             	}
-            	
-            	// bind event to each colorPicker so that colors changed by user are updated
-            	var colorPickers = document.getElementsByClassName("colorPicker");
-                    for (var i = 0; i < colorPickers.length; i++) {
-                        colorPickers[i].addEventListener('change', getColorsForCat, false);
-                    }
+                
+                // make table sortable
                 $.bootstrapSortable({ applyLast: true })
             }
             
             
-            // get color for each category : [['A', '#66c2a5'], ['B', '#fc8d62']]
+            // get color for each category : [['A', '#66c2a5'], ['B', '#fc8d62'], ...]
             function getColorsForCat() {
             	colorsForCat = [];
             	var table = document.getElementById('catTable');
-            	for (var r = 1, n = table.rows.length; r < n; r++) {
+            	for (var r = 1 ; r < table.rows.length ; r++) {
             	    currentCat = table.rows[r].cells[0].innerHTML;
                     currentColor = table.rows[r].cells[1].children[0].value;
             	    colorsForCat.push([]);
@@ -637,7 +663,7 @@
             	    colorsForCat[r-1].push(currentColor);
             	}
             }
-            
+
             
             // put csv file content into a variable
             function readCsv() {
@@ -681,8 +707,6 @@
                             document.getElementById('colCat').options.add(new Option(columnNames[i], columnNames[i]));
                             document.getElementById('colTooltip').options.add(new Option(columnNames[i], columnNames[i]));
                         }
-                        // update category table
-                        updateCat();
                         
                         // reinitializes width and height of svg
                         svg_width = (window.innerWidth)*8/13; 

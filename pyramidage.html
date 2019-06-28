@@ -561,11 +561,24 @@
                         // convert string array to number array without taking into account undefined values
                         uniqueCatNb = [];
                         for (i=0 ; i<uniqueCat.length ; i++) {
-                        	if (uniqueCat[i] != '') {uniqueCatNb.push(Number(uniqueCat[i]))}
+                        	if ((uniqueCat[i] != '') && (isNaN(Number(uniqueCat[i])) == false)) {
+                        	    uniqueCatNb.push(Number(uniqueCat[i]))
+                            } else {
+                                var textValues = true;
+                                break;
+                            }
                         }
-                        var colorScale = d3.scaleSequential()
-                            .domain([Math.min(...uniqueCatNb), Math.max(...uniqueCatNb)])
-                            .interpolator(d3.interpolatePuRd);
+                        // if categories are text values, lighter color for first row and darker for last row
+                        if (textValues == true) {
+                            var colorScale = d3.scaleSequential()
+                                .domain([1, uniqueCat.length])
+                                .interpolator(d3.interpolatePuRd);
+                        // else, interpolates color based upon category values	
+                        } else {
+                            var colorScale = d3.scaleSequential()
+                                .domain([Math.min(...uniqueCatNb), Math.max(...uniqueCatNb)])
+                                .interpolator(d3.interpolatePuRd);
+                        }
                         break;
                 }
                 return colorScale;
@@ -598,22 +611,6 @@
                     dicCat = {'Tout' : catList.length}
             	}
             	
-            	// disable or enable sequential color scale if categories are text or number
-            	for (i=0 ; i<uniqueCat.length ; i++) {
-            	    // if there is a value in category list which cannot be converted to number
-            		if (isNaN(Number(uniqueCat[i]))) {
-            		    // disable sequential color scale
-            			$("option[value='seq']")
-                            .attr("disabled", "disabled")
-                        // select qualitative color scale
-                        document.getElementById("colorScale").selectedIndex = 0;
-            			break;
-            	    // re-enable sequential color scale if categories can be converted to numbers
-            		} else {
-            			$("option[value='seq']")
-                            .removeAttr("disabled")
-            		}
-            	}
             	
             	// clean table
             	table = document.getElementById("catTableTbody");
@@ -632,10 +629,18 @@
             		cellColor = row.insertCell(1);
             		// if sequential color scale, scale return a rgb color which must be converted to hex
             		if (colorScaleType == 'seq') {
+            		  // black for undefined values
             		  if (key == '') {
-            		  	catColor = '#000000'; // black for undefined values
+            		  	catColor = '#000000';
             		  } else {
-            		      catColor = d3.color(colorScale(Number(key))).hex()
+            		      // if category value is a number, uses that number
+            		      if (isNaN(Number(key)) == false) {
+            		          catColor = d3.color(colorScale(Number(key))).hex()
+            		      // else, use row number	
+            		      } else {
+            		          catColor = d3.color(colorScale(row.rowIndex)).hex();
+            		          console.log(catColor);
+            		      }
             		  }
             		// qualitative color scale is simpler 
             		} else {

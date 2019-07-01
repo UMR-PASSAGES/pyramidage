@@ -353,7 +353,7 @@
             // qualitative color scales, 1st value is real name, 2nd is label
             var qualiColorScales = [['schemeSet3', 'schemeSet3'], ['schemeCategory10', 'schemeCategory10'], ['schemeAccent', 'schemeAccent']]; 
             // sequential color scales, 1st value is real name, 2nd is label
-            var seqColorScales = [['interpolatePurples', 'Violets'], ['interpolateReds', 'Rouges'], ['interpolateOranges', 'Oranges'], ['interpolateGreens', 'Verts'], ['interpolateBlues', 'Bleus']];
+            var seqColorScales = [['interpolatePurples', 'Violets'], ['interpolateReds', 'Rouges'], ['interpolateOranges', 'Oranges'], ['interpolateGreens', 'Verts'], ['interpolateBlues', 'Bleus'], ['interpolateGreys', 'Gris']];
             var inputArray;
             var catList;
             var colorsForCat = [];
@@ -937,7 +937,7 @@
             // download graph as svg
             // see https://stackoverflow.com/questions/16870876/writing-html-form-data-to-a-txt-file-without-the-use-of-a-webserver
             function download() {
-            	copyText = document.getElementById("col2").innerHTML;
+            	copyText = document.getElementById("graph").innerHTML;
                 var pom = document.createElement('a');
                 pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + 
                 encodeURIComponent(copyText));

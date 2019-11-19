@@ -1088,6 +1088,7 @@
                 classSize = Number(document.getElementById("classSize").value);
                 beginFirstClass = Number(document.getElementById("beginFirstClass").value);
                 endLastClass = Number(document.getElementById("endLastClass").value);
+                sexRep = document.getElementById('sexRep').value;
                 
                 // a CSV file must be selected
                 if (document.getElementById('inputFile').files[0] == null) {
@@ -1096,14 +1097,19 @@
                 }
                 // birth year and sex are mandatory
                 if ((colYear == -1) && (colSex == -1)) {
-                	window.alert("Choisissez une colonne pour l'année de naissance et pour le sexe");
-                	return false;
+                    if (sexRep != 'noGender') {
+                	   window.alert("Choisissez une colonne pour l'année de naissance et pour le sexe");
+                	   return false;
+                    } else {
+                       window.alert("Choisissez une colonne pour l'année de naissance");
+                	   return false;
+                    }
                 }
                 if (colYear == -1) {
                 	window.alert("Choisissez une colonne pour l'année de naissance");
                 	return false;
                 }
-                if (colSex == -1) {
+                if ((colSex == -1) && (sexRep != 'noGender')) {
                 	window.alert("Choisissez une colonne pour le sexe");
                 	return false;
                 }

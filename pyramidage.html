@@ -45,7 +45,15 @@
             overflow: auto;
             display:inline-block;
         }
-            
+        figure{
+            display: block;
+            text-align: center;
+            font-style: italic;
+            font-size: small;
+        }
+        img{
+            padding: 10px;
+        } 
     </style>    
     
     <body class="bg-light">
@@ -224,7 +232,9 @@
             <div class="row">
                 <div class="col">
                     <h3><a id="pourquoi">A quoi ça sert ?</a></h3>
-                    <p class="text-justify">Pyramidage est un outil en ligne pour créer des pyramides des âges automatiquement à partir d'un fichier CSV. Cet outil présente 3 intérêts :
+                    <p class="text-justify">Pyramidage est un outil en ligne pour créer des pyramides des âges automatiquement à partir d'un fichier CSV.</p>
+                    <a href="illustrations/principe_pyramidage.svg"><img src="illustrations/principe_pyramidage.svg" alt="Principe de l'outil : du tableau CSV à la pyramide des âges" width="1000px"></a>
+                    <p class="text-justify>">Cet outil présente 3 intérêts :
                         <ul>
                             <li>Faire varier facilement la taille des classes d'âge et les âges minimum et maximum</li>
                             <li>Visualiser 2 variables en plus de l'âge et du sexe, une avec la couleur et l'autre avec une infobulle (en passant la souris sur la pyramide)</li>
@@ -274,6 +284,10 @@
                                         <p class="text-justify">Le caractère délimiteur (virgule, point-virgule...) est normalement automatiquement détecté.</p>
                                         <p class="text-justify">Une fois le fichier sélectionné, un aperçu de son contenu s'affiche.</p>
                                         <p class="text-justify">Un fichier exemple avec des données aléatoires est disponible <a href="http://ouvrir.passages.cnrs.fr/pyramidage/test_data/test_data_pyramidage.csv">ici</a>.</p>
+                                        <figure>
+                                            <img src="illustrations/csv.png" alt="Aperçu d'un fichier CSV">
+                                            <figcaption>Exemple de fichier CSV utilisable en entrée (données générées aléatoirement). Seules les 2 premières colonnes sont indispensables (année de naissance et sexe).</figcaption>
+                                        </figure>
                                     </div>
                                     <div class="tab-pane fade" id="list-year" role="tabpanel" aria-labelledby="list-year-list"><p class="text-justify">Choisissez l'année pour laquelle la pyramide sera valable. Il s'agit généralement de l'année en cours.</p></div>
                                     <div class="tab-pane fade" id="list-birthyear" role="tabpanel" aria-labelledby="list-birthyear-list"><p class="text-justify">Sélectionnez la colonne du fichier CSV correspondant à l'année de naissance.</p></div>
@@ -306,21 +320,43 @@
                                         <p class="text-justify">Les gammes de couleur utilisées pour représenter les catégories peuvent être qualitatives, pour représenter des valeurs non ordonnées, ou bien séquentielles, pour représenter des valeurs ordonnées.</p>
                                         <p class="text-justify">Si vos catégories sont des nombres et votre gamme de couleur de type séquentiel, les couleurs extrêmes de la gamme correspondront aux valeurs minimum et maximum de vos catégories, et les couleurs intermédiaires seront interpolées en fonction des valeurs.</p>
                                         <p class="text-justify">Si vos catégories sont des textes et votre gamme de couleur de type séquentiel, les couleurs extrêmes de la gamme correspondront à la première et la dernière catégorie rencontrée dans votre fichier CSV.</p>
+                                        <figure>
+                                            <img src="illustrations/gamme_couleur_qualitative.png" alt="gamme de couleur qualitative">
+                                            <img src="illustrations/gamme_couleur_sequentielle.png" alt="gamme de couleur sequentielle">
+                                            <figcaption>Exemples de gammes de couleur qualitative (à gauche) et séquentielle (à droite) issues de <a href="http://colorbrewer2.org/">ColorBrewer</a></figcaption>
+                                        </figure>
                                     </div>
                                     <div class="tab-pane fade" id="list-colorscale" role="tabpanel" aria-labelledby="list-colorscale-list">
                                         <p class="text-justify">Différentes gammes de couleurs sont disponibles en fonction du type de gamme. Toutes ces gammes sont issues de <a href="http://colorbrewer2.org/">ColorBrewer</a> via le plugin D3.js <a href="https://github.com/d3/d3-scale-chromatic">d3-scale-chromatic</a>.</p>
+                                        <figure>
+                                            <img src="illustrations/Set3.png" alt="gamme de couleur schemeSet3">
+                                            <figcaption>Gamme de couleur <a href="https://github.com/d3/d3-scale-chromatic#schemeSet3">schemeSet3</a></figcaption>
+                                        </figure>
+                                        <figure>
+                                            <img src="illustrations/category10.png" alt="gamme de couleur Category10">
+                                            <figcaption>Gamme de couleur <a href="https://github.com/d3/d3-scale-chromatic#schemeCategory10">schemeCategory10</a></figcaption>
+                                        </figure>
+                                        <figure>
+                                            <img src="illustrations/Accent.png" alt="gamme de couleur Accent">
+                                            <figcaption>Gamme de couleur <a href="https://github.com/d3/d3-scale-chromatic#schemeAccent">schemeAccent</a></figcaption>
+                                        </figure>
                                     </div>
                                     <div class="tab-pane fade" id="list-cattable" role="tabpanel" aria-labelledby="list-cattable-list">
-                                        <p class="text-justify">Ce tableau contient deux colonnes, pour le nom et la couleur de chaque catégorie.</p>
+                                        <p class="text-justify">Ce tableau contient 3 colonnes, pour le nom, la couleur et les effectifs de chaque catégorie.</p>
                                         <p class="text-justify">Une fois le fichier CSV choisi, il contient par défaut une seule ligne avec une catégorie unique, et peut contenir plusieurs lignes si vous sélectionnez une colonne catégorie.</p>
                                         <p class="text-justify">Il est possible de changer l'ordre des lignes du tableau par un glisser-déposer, ou bien en cliquant sur le nom des colonnes. L'ordre dans lequel les individus sont dessinés sur la pyramide des âges est alors modifié.</p>
                                         <p>Jusqu'à 12 couleurs, les couleurs sont issues d'une gamme qualitative proposée par <a href="http://colorbrewer2.org/">ColorBrewer</a>. Au-delà, il s'agit de couleurs aléatoires.</p>
+                                        <figure>
+                                            <img src="illustrations/tableau_categories.png" alt="tableau des catégories">
+                                            <figcaption>Exemple de tableau des catégories</figcaption>
+                                        </figure>
                                     </div>
                                     <div class="tab-pane fade" id="list-buildpyramid" role="tabpanel" aria-labelledby="list-buildpyramid-list"><p class="text-justify">Après avoir choisi vos paramètres, cliquez sur ce bouton pour afficher la pyramide des âges.</p><p class="text-justify">Le graphique ne se met pas à jour automatiquement, il faut donc reconstruire la pyramide après avoir modifié un paramètre.</p></div>
                                     <div class="tab-pane fade" id="list-svgexport" role="tabpanel" aria-labelledby="list-svgexport-list">
                                         <p class="text-justify">Cliquez sur ce bouton pour obtenir un export SVG de la pyramide.</p>
                                         <p class="text-justify">Chaque carré correspondant à un individu aura un identifiant reprenant l'information de la colonne infobulle si cette colonne a été sélectionnée.</p>
                                         <p class="text-justify">Le SVG est un format vectoriel modifiable dans un logiciel de dessin tel qu'Inkscape ou Adobe Illustrator. Vous pourrez également le convertir dans un format image comme le JPG ou le PNG.</p>
+                                        <p class="text-justify">Si vous n'arrivez pas à ouvrir le fichier SVG avec Adobe Illustrator, ouvrez-le avec Inkscape et enregistrez-le à nouveau au format SVG puis réessayez avec Illustrator.</p>
                                     </div>
                                 </div>
                             </div>

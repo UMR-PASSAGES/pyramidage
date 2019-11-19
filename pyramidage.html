@@ -41,7 +41,7 @@
             pointer-events: none;
             }
         .table-scrollable{
-            max-height: 150px;
+            max-height: 300px;
             overflow: auto;
             display:inline-block;
         }
@@ -63,11 +63,14 @@
             
             <!-- important part -->
             <div class="row">
-                <div class="col-sm-4" id="col1">
-
+            
+                <div class="col-sm-12" id="col0">
+                
+                    <h4>Données en entrée</h4>
+                
                     <!-- input CSV file -->
                     <div class="row">
-                        <div class="col-4">
+                        <div class="col-2">
                             <label for="inputFile" class="btn btn-secondary btn-block btn-outlined">Fichier CSV</label>
                             <input type="file" id="inputFile" accept=".csv" name="Fichier CSV"/ style="display: none">
                         </div>
@@ -76,13 +79,23 @@
                         </div>
                     </div>
                     
+                    <br>
+                    
                     <!-- div for CSV preview -->
                     <div class="row">
                         <div class="col">
                             <div id="divPreview" class="table-responsive table-scrollable"></div>
                         </div>
                     </div>
-                    
+                    <hr>
+                </div>
+                
+
+            
+                <div class="col-sm-4" id="col1">
+                
+                    <h4>Paramètres</h4>
+
                     <!-- input parameters -->
                     <div class="row">
                         <!-- current year -->
@@ -164,7 +177,10 @@
                         </div>
                     </div>
                     <br>
+                    
                     <!-- category table -->
+                    <h4>Catégories</h4>
+                    
                     <div class="col">
                         <div class="table-responsive table-scrollable">
                             <table class="table table-sm table-hover sortable" id="catTable">

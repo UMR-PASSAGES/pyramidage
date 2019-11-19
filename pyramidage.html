@@ -399,7 +399,6 @@
             
             // populate colorScale dropdown list
             function populateColorScale() {
-                console.log('populateColorScale');
                 list = document.getElementById('colorScale');
                 // remove all options from list
                 for(i = list.options.length-1 ; i>=0 ; i--) {
@@ -566,9 +565,11 @@
             
             // display graph legend
             function createLegend() {
-            	console.log('hop');
             	// for each legend post
             	for (i=0 ; i<colorsForCat.length ; i++) {
+            	    // calculate stocks for each cat
+            	    var stock = svg.selectAll("[fill='" + colorsForCat[i][1] + "']")
+            	       .size();
             	    // add square
                 	var legendSquares = svg.append("rect")
                 	   .attr("class", "legSquare")
@@ -584,13 +585,14 @@
                 	   .attr("y", svg_height + 10 + squareSide/2 + squareSide * i )
                 	   .style("font-size", "0.8em")
                 	   .attr("dy", ".35em")
-                	   .text(colorsForCat[i][0]);
+                	   .text(colorsForCat[i][0] + " (" + stock + ")");
                 }
                 // get legend height
                 legHeight = colorsForCat.length * (squareSide + barPadding) + 10;
                 // change svg height accordingly
                 svg
                     .attr('height', svg_height + legHeight);
+                
             }
             
             // display CSV preview as an html table

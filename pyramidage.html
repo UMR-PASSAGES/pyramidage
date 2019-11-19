@@ -25,7 +25,8 @@
     <style>
         div#graph{
             border: 0px solid black;
-            overflow: scroll;
+            overflow-x: scroll;
+            overflow-y: hidden;
         }
         div.tooltip {
             position: absolute;
@@ -586,7 +587,7 @@
                 	   .text(colorsForCat[i][0]);
                 }
                 // get legend height
-                legHeight = colorsForCat.length * (squareSide + barPadding);
+                legHeight = colorsForCat.length * (squareSide + barPadding) + 10;
                 // change svg height accordingly
                 svg
                     .attr('height', svg_height + legHeight);
@@ -819,9 +820,9 @@
                             .attr('height', svg_height)
                         // clean svg
                         svg.selectAll("*").remove();
-                        // resize graph div to make it the same size as svg
-                        document.getElementById('graph').setAttribute("style","width:" + svg_width + "px");
-                        document.getElementById('graph').setAttribute("style","height:" + svg_height + "px");
+                        //// resize graph div to make it the same size as svg
+                        //document.getElementById('graph').setAttribute("style","width:" + svg_width + "px");
+                        //document.getElementById('graph').setAttribute("style","height:" + svg_height + "px");
                         
                         // update category table
                         updateCat();
@@ -944,9 +945,9 @@
                 svg
                     .attr('width', svg_width)
                     .attr('height', svg_height)
-                // resize graph div to make it the same size as svg
-                document.getElementById('graph').setAttribute("style","width:" + svg_width + "px");
-                document.getElementById('graph').setAttribute("style","height:" + svg_height + "px");
+                //// resize graph div to make it the same size as svg
+                //document.getElementById('graph').setAttribute("style","width:" + svg_width + "px");
+                //document.getElementById('graph').setAttribute("style","height:" + svg_height + "px");
                 
                 // set domain and range for x axis, female and male
                 x_scale_f.domain([0, max_x]);   
@@ -1022,6 +1023,12 @@
                 
                 // add legend
                 createLegend();
+                
+                // resize graph div to make it the same size as svg
+                realSvgWidth = svg.style("width");
+                realSvgHeight = svg.style("height");
+                document.getElementById('graph').setAttribute("style","width:" + realSvgWidth + "px");
+                document.getElementById('graph').setAttribute("style","height:" + realSvgHeight + "px");
                 
             }
         

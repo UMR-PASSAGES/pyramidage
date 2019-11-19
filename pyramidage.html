@@ -178,10 +178,17 @@
                         </div>
                         <!-- color scale -->
                         <div class="col-sm-8">
-                            <label for="colorScaleType">Gamme de couleur :</label>
+                            <label for="colorScale">Gamme de couleur :</label>
                         </div>   
                         <div class="col-sm-4">
                             <select class="custom-select d-block w-20" id="colorScale"></select>
+                        </div>
+                        <!-- Représentation du sexe -->
+                        <div class="col-sm-8">
+                            <label for="sexRep">Répartition des sexes :</label>
+                        </div>   
+                        <div class="col-sm-4">
+                            <select class="custom-select d-block w-20" id="sexRep"></select>
                         </div>
                     </div>
                     <br>
@@ -214,8 +221,6 @@
                         </div>
                         <!-- output SVG file -->
                         <div class="col-6">
-                            <!--<form onsubmit="download(this['name'].value)">-->
-                            <!--<input class="btn btn-secondary btn-block" type="submit" value="Export SVG">-->
                             <button type="submit" class="btn btn-secondary btn-block" id="svgExport">Export SVG</button>
                         </div>
                     </div>
@@ -265,9 +270,11 @@
                                     <a class="list-group-item list-group-item-action" id="list-endlastclass-list" data-toggle="list" href="#list-endlastclass" role="tab" aria-controls="endlastclass">Dernière classe d'âge</a>
                                     <a class="list-group-item list-group-item-action" id="list-colorscaletype-list" data-toggle="list" href="#list-colorscaletype" role="tab" aria-controls="colorscaletype">Type de gamme de couleur</a>
                                     <a class="list-group-item list-group-item-action" id="list-colorscale-list" data-toggle="list" href="#list-colorscale" role="tab" aria-controls="colorscale">Gamme de couleur</a>
+                                    <a class="list-group-item list-group-item-action" id="list-sexrep-list" data-toggle="list" href="#list-sexrep" role="tab" aria-controls="sexrep">Répartition des sexes</a>
                                     <a class="list-group-item list-group-item-action" id="list-cattable-list" data-toggle="list" href="#list-cattable" role="tab" aria-controls="cattable">Tableau des catégories</a>
                                     <a class="list-group-item list-group-item-action" id="list-buildpyramid-list" data-toggle="list" href="#list-buildpyramid" role="tab" aria-controls="buildpyramid">Construire une pyramide</a>
                                     <a class="list-group-item list-group-item-action" id="list-svgexport-list" data-toggle="list" href="#list-svgexport" role="tab" aria-controls="svgexport">Export SVG</a>
+                                    
                                 </div>
                             </div>
                                 <div class="col-sm-8">
@@ -340,6 +347,14 @@
                                             <img src="illustrations/Accent.png" alt="gamme de couleur Accent">
                                             <figcaption>Gamme de couleur <a href="https://github.com/d3/d3-scale-chromatic#schemeAccent">schemeAccent</a></figcaption>
                                         </figure>
+                                    </div>
+                                    <div class="tab-pane fade" id="list-sexrep" role="tabpanel" aria-labelledby="list-sexrep-list">
+                                        <p class="text-justify">Vous avez le choix entre 3 modes&nbsp;:</p>
+                                        <ul>
+                                            <li>"traditionnel", les hommes à gauche et les femmes à droite</li>
+                                            <li>les femmes à gauche et les hommes à droite</li>
+                                            <li>pas de distinction de sexe. La colonne sexe du CSV est alors facultative.</li>
+                                        </ul>
                                     </div>
                                     <div class="tab-pane fade" id="list-cattable" role="tabpanel" aria-labelledby="list-cattable-list">
                                         <p class="text-justify">Ce tableau contient 3 colonnes, pour le nom, la couleur et les effectifs de chaque catégorie.</p>
@@ -647,6 +662,33 @@
                 
             }
             
+            function addSexIndication() {
+                sexRep = document.getElementById('sexRep').value;
+                if (sexRep == 'womenLeft') {
+                	leftText = 'Femmes';
+                	rightText = 'Hommes';
+                } else {
+                	leftText = 'Hommes';
+                	rightText = 'Femmes';
+                }
+                if (sexRep != 'noGender') {
+                    var leftInd = svg.append("text")
+                        .attr("class", "sexIndicator")
+                        .attr("x", 10)
+                        .attr("y", 15)
+                        .style("font-size", "1em")
+                	    .attr("dy", ".35em")
+                	    .text(leftText);
+                	var rightInd = svg.append("text")
+                        .attr("class", "sexIndicator")
+                        .attr("x", svg_width - 70)
+                        .attr("y", 15)
+                        .style("font-size", "1em")
+                	    .attr("dy", ".35em")
+                	    .text(rightText);
+                }
+            }
+            
             // display CSV preview as an html table
             function csvPreview(inputArray) {
                 // remove existing preview if one
@@ -874,9 +916,6 @@
                             .attr('height', svg_height)
                         // clean svg
                         svg.selectAll("*").remove();
-                        //// resize graph div to make it the same size as svg
-                        //document.getElementById('graph').setAttribute("style","width:" + svg_width + "px");
-                        //document.getElementById('graph').setAttribute("style","height:" + svg_height + "px");
                         
                         // update category table
                         updateCat();
@@ -969,11 +1008,15 @@
                     } else {
                     	currentTooltip = ''
                     }
-                	if (femaleSex.indexOf(inputArray[colSex][i]) >= 0) {
-                        dic_f[currentCat][nbAgeClass].push(currentTooltip);
-                	}
-                	if (maleSex.indexOf(inputArray[colSex][i]) >= 0) {
-                        dic_m[currentCat][nbAgeClass].push(currentTooltip);
+                    if (document.getElementById('sexRep').value == 'noGender') {
+                    	dic_m[currentCat][nbAgeClass].push(currentTooltip);
+                    } else {
+                    	if (femaleSex.indexOf(inputArray[colSex][i]) >= 0) {
+                            dic_f[currentCat][nbAgeClass].push(currentTooltip);
+                    	}
+                    	if (maleSex.indexOf(inputArray[colSex][i]) >= 0) {
+                            dic_m[currentCat][nbAgeClass].push(currentTooltip);
+                    	}
                 	}
                 }
                 
@@ -1072,11 +1115,27 @@
                 svg.selectAll("*").remove();
                 
             	// create graphic from dic_f and dic_m
-                createGraph(dic_f, 'f', max_x);
-                createGraph(dic_m, 'm', max_x);
+            	sexRep = document.getElementById('sexRep').value;
+            	switch (sexRep) {
+            		case 'menLeft':
+            		  createGraph(dic_f, 'f', max_x);
+                      createGraph(dic_m, 'm', max_x);
+                      break;
+                    case 'womenLeft':
+            		  createGraph(dic_f, 'm', max_x);
+                      createGraph(dic_m, 'f', max_x);
+                      break;
+                    case 'noGender':
+                      createGraph(dic_m, 'm', max_x);
+                      break;
+            	}
+                
                 
                 // add legend
                 createLegend();
+                
+                // add sex indication if relevant
+                addSexIndication();
                 
                 // resize graph div to make it the same size as svg
                 realSvgWidth = svg.style("width");
@@ -1135,6 +1194,11 @@
             // populate color scales qualitative and sequential dropdown lists
             populateColorScale();
             document.getElementById("colorScaleType").addEventListener('change', populateColorScale);
+            
+            // populate sex repartition dropdown list
+            document.getElementById('sexRep').options.add(new Option('hommes à gauche', 'menLeft'));
+            document.getElementById('sexRep').options.add(new Option('femmes à gauche', 'womenLeft'));
+            document.getElementById('sexRep').options.add(new Option('non genrée', 'noGender'));
             
             // update category table when colorScaleType gets changed
             document.getElementById("colorScaleType").addEventListener('change', updateCat);

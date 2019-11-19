@@ -189,8 +189,9 @@
                         </div>
                         <!-- output SVG file -->
                         <div class="col-6">
-                            <form onsubmit="download(this['name'].value)">
-                            <input class="btn btn-secondary btn-block" type="submit" value="Export SVG">
+                            <!--<form onsubmit="download(this['name'].value)">-->
+                            <!--<input class="btn btn-secondary btn-block" type="submit" value="Export SVG">-->
+                            <button type="submit" class="btn btn-secondary btn-block" id="svgExport">Export SVG</button>
                         </div>
                     </div>
                     
@@ -1021,6 +1022,9 @@
             
             // when user wants to create pyramid
             document.getElementById("createGraph").addEventListener('click', letsGraph);
+            
+            // when user wants to export pyramid as SVG
+            document.getElementById("svgExport").addEventListener('click', download);
             
             // makes table sortable by drag and drop
             $('tbody').sortable();

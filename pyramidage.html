@@ -501,7 +501,6 @@
                 // for each color scale
                 for (i=0 ; i<colorScaleList.length ; i++) {
                     // add an option with value and text
-                    //list.options.add(new Option(colorScaleList[i][1], colorScaleList[i][0]));
                     list.options.add(new Option(colorScaleList[i][1], colorScaleList[i][0]));
                 }
 
@@ -651,9 +650,6 @@
             
                 // for each legend post
             	for (i=0 ; i<colorsForCat.length ; i++) {
-            	    // calculate stocks for each cat
-            	    //var stock = svg.selectAll("[fill='" + colorsForCat[i][1] + "']")
-            	    //   .size();
             	    // add square
                 	var legendSquares = svg.append("rect")
                 	   .attr("class", "legSquare")
@@ -808,10 +804,6 @@
                 return colorScale;
             }
             
-            //function mmmsetColorScale() {
-            //	colorScale = document.getElementById('colorScale').value;
-            //}
-            
 
             // update categories table everytime a new category column or color scale is selected
             function updateCat() {
@@ -877,9 +869,6 @@
             		cellStock = row.insertCell(2);
             		cellStock.innerHTML = dicCat[key];
             	}
-            	
-            	//// stores categories and their colors
-            	//getColorsForCat();
             	
                 // make table sortable
                 $.bootstrapSortable({ applyLast: true })
@@ -1077,7 +1066,7 @@
                 
                 // set square side so that graph fits in svg
                 squareSide = Math.min((svg_width-2*graphMargin-middleSpace)/(max_x*2), (svg_height-2*graphMargin)/listBeginClass.length);
-                //squareSide = 15;
+                //squareSide = 15; // useful for generating multiple pyramid with same scale
                 // square side should not be less than minSquareSide, if necessary svg should be scrollable
                 if (squareSide < minSquareSide) {
                 	squareSide = minSquareSide;
@@ -1088,15 +1077,12 @@
                 	svg_width = (window.innerWidth)*8/13; 
                     svg_height = 500;
                     squareSide = Math.min((svg_width-2*graphMargin-middleSpace)/(max_x*2), (svg_height-2*graphMargin)/listBeginClass.length);
-                    //squareSide = 15;
+                    //squareSide = 15; // useful for generating multiple pyramid with same scale
                 }
                 // resize svg
                 svg
                     .attr('width', svg_width)
                     .attr('height', svg_height)
-                //// resize graph div to make it the same size as svg
-                //document.getElementById('graph').setAttribute("style","width:" + svg_width + "px");
-                //document.getElementById('graph').setAttribute("style","height:" + svg_height + "px");
                 
                 // set domain and range for x axis, female and male
                 x_scale_f.domain([0, max_x]);   
@@ -1188,7 +1174,6 @@
                       createGraph(dic_m, 'm', max_x);
                       break;
             	}
-                
                 
                 // add legend
                 createLegend(histo);
